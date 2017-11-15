@@ -25,29 +25,80 @@
                 stroke: #ccc;
                 stroke-width: 1.5px;
             }
+
+            .simexp_tree_tooltip {
+                position: absolute;         
+                text-align: center;         
+                /*width: 60px;                    
+                height: 28px;*/                   
+                padding: 2px;               
+                font-family: "Roboto", sans-serif;      
+                font-size: 12px;
+                background: lightsteelblue; 
+                border: 0px;        
+                border-radius: 8px;         
+                pointer-events: none;
+            }
+
+            .simexp_tree_div {
+
+            }
         </style>
     </head>
 
+    <!--
+
+    Task List:
+
+    (1) Color scaled edges
+    (2) Tree/window scaling
+    (3) Colored text for scale label - name field colored by colordict associated with scale field
+    (4) Dropdown menu to switch between scale 7 mass regions
+    (5) Alternate implementation with whole brain
+ 
+    -->
+
     <body>
+        <header>
+            <button onclick="expandAll()">Expand All</button>
+            <button onclick="collapseAll()">Collapse All</button>
+        </header>        
         <div id="simexp_tree_div"></div>
 
         <!-- D3.js -->
         <script src="http://d3js.org/d3.v3.min.js"></script>
 
         <!-- Script for collapsible Reingold-Tilford tree from: https://bl.ocks.org/mbostock/4339083 -->
+        <!-- Script for hover tooltip from http://bl.ocks.org/d3noob/a22c42db65eb00d4e369 -->
         <script>
+
+            // var orig_width = 960;
+            // var orig_height = 800;
+            var orig_width = 2880;
+            var orig_height = 800;
             var margin = {
                     top: 20,
                     right: 120,
                     bottom: 20,
                     left: 120
                 },
-                width = 960 - margin.right - margin.left,
-                height = 800 - margin.top - margin.bottom;
+                width = orig_width - margin.right - margin.left,
+                height = orig_height - margin.top - margin.bottom;
 
             var i = 0,
                 duration = 750,
                 root;
+
+            // rgb(42,252,133) #2afc85  0
+            // to
+            // rgb(11,36,250)  #0b24fa 1
+            // diff == -1fd78b or abs(1fd78b)
+            // hexString = yourNumber.toString(16);                
+
+            var linkColors = {
+                "lo": ["#2afc85", 2817157], 
+                "hi": ["#0b24fa", 730362]
+            };
 
             var tree = d3.layout.tree()
                 .size([height, width]);
@@ -60,24 +111,28 @@
             var svg = d3.select("#simexp_tree_div").append("svg")
                 .attr("width", width + margin.right + margin.left)
                 .attr("height", height + margin.top + margin.bottom)
+                .attr("overflow", "scroll")
+                //.attr("viewBox", "0 0 " + (width * 3).toString() + " " + (height * 3).toString())
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            d3.json("data/d3_rt_tree_example.json", function(error, flare) {
+            // d3.json("data/d3_rt_tree_example.json", function(error, jsonData) {
+            d3.json("data/tree_roi_1_alt.json", function(error, jsonData) {
 
                 if ( error ) {
                     throw error;
                 }
 
-                root = flare;
+                root = jsonData;
                 root.x0 = height / 2;
                 root.y0 = 0;
 
                 function collapse(d) {
                     
-                    if ( d.children ) {
-                        d._children = d.children;
+                    if ( d.Children ) {
+                        d._children = d.Children;
                         d._children.forEach(collapse);
+                        d.Children = null;
                         d.children = null;
                     }
                 }
@@ -87,6 +142,11 @@
             });
 
             d3.select(self.frameElement).style("height", "800px");
+
+            // Define the div for the tooltip
+            var div = d3.select("body").append("div")   
+                .attr("class", "simexp_tree_tooltip")               
+                .style("opacity", 0);            
 
             function update(source) {
 
@@ -117,6 +177,23 @@
                     .attr("r", 1e-6)
                     .style("fill", function(d) {
                         return d._children ? "lightsteelblue" : "#fff";
+                    })
+                    .on("mouseover", function(d) {
+
+                        var tooltip_div = d3.select(".simexp_tree_tooltip");
+                        tooltip_div.transition()        
+                            .duration(200)      
+                            .style("opacity", .9);      
+                        tooltip_div.html(d.name)  
+                            .style("left", (d3.event.pageX) + "px")     
+                            .style("top", (d3.event.pageY - 28) + "px");    
+                        })                  
+                    .on("mouseout", function(d) {  
+
+                        var tooltip_div = d3.select(".simexp_tree_tooltip");     
+                        tooltip_div.transition()        
+                            .duration(500)      
+                            .style("opacity", 0);   
                     });
 
                 nodeEnter.append("text")
@@ -227,6 +304,38 @@
                 }
                 update(d);
             }
+
+            // ========= Expand all/Collapse all section =========
+            function expand(d){   
+                var children = ( d.children ) ? d.children : d._children;
+                if ( d._children ) {        
+                    d.children = d._children;
+                    d._children = null;       
+                }
+                if ( children )
+                  children.forEach(expand);
+            }
+
+            function collapse(d) {
+                
+                if ( d.children ) {
+                    d._children = d.children;
+                    d._children.forEach(collapse);
+                    d.children = null;
+                }
+            }            
+
+            function expandAll(){
+                expand(root); 
+                update(root);
+            }
+
+            function collapseAll(){
+                root.children.forEach(collapse);
+                collapse(root);
+                update(root);
+            }    
+
         </script>
     </body>
 
