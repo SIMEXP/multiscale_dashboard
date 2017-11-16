@@ -21,9 +21,10 @@
 
             #simexp_tree_roi_selector {
                 font-size: 16px;
+                font-family: "Roboto", sans-serif;
                 color: white;
                 background-color: black;
-                opacity: 0.6;
+                opacity: 0.9;
                 border-radius: 5px;
                 border: 0px;
                 padding: 10px 10px;
@@ -37,6 +38,7 @@
                 text-align: center;
                 text-decoration: none;
                 font-size: 16px;
+                font-family: "Roboto", sans-serif;
                 border-radius: 8px;
                 margin-left: 10px;
             }
@@ -53,7 +55,7 @@
 
             .simexp_tree_node text {
                 font-family: "Roboto", sans-serif;
-                font-size:  12px;
+                font-size:  14px;
             }
 
             .simexp_tree_link {
@@ -66,16 +68,22 @@
 
             .simexp_tree_tooltip {
                 position: absolute;         
-                text-align: center;         
+                text-align: left;         
                 /*width: 60px;                    
                 height: 28px;*/                   
-                padding: 2px;               
+                padding: 5px;               
                 font-family: "Roboto", sans-serif;      
-                font-size: 12px;
-                background: lightsteelblue; 
-                border: 0px;        
+                font-size: 14px;
+                background: lightsteelblue;                 
                 border-radius: 8px;         
                 pointer-events: none;
+                border-color: black;
+            }
+
+            .simexp_tree_tooltip_fieldtitle {
+                font-size: 16px;
+                font-family: "Roboto", sans-serif;
+                color: black;
             }
 
         </style>
@@ -95,9 +103,9 @@
 
     <body>
         <header>
-            <label class="simexp_selector_label">ROI:&nbsp;<select id="simexp_tree_roi_selector"></select></label>
-            <button class="simexp_tree_button" onclick="expandAll()" style="margin-left: 50px;">Expand All</button>
-            <button class="simexp_tree_button" onclick="collapseAll()">Collapse All</button>
+            <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select id="simexp_tree_roi_selector"></select></label>
+            <button class="simexp_tree_button" style="margin-left: 50px;" onclick="expandAll">Expand All</button>
+            <button class="simexp_tree_button" onclick="collapseAll">Collapse All</button>
         </header>        
         <div id="simexp_tree_div"></div>
 
@@ -267,6 +275,7 @@
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             var jsonDataRef = null;
+            var currentRoot = null;
 
             // d3.json("data/d3_rt_tree_example.json", function(error, jsonData) {
             // d3.json("data/hierarchy_tree_wcolor.json", function(error, jsonData) {
@@ -285,10 +294,10 @@
                     if ( 0 == index ) {
                         selector.append("option").attr("value", jsonData[index].roi)
                                                  .attr("selected", "selected")
-                                                 .text(jsonData[index].roi);
+                                                 .text(jsonData[index].name);
                     } else {
                         selector.append("option").attr("value", jsonData[index].roi)
-                                                 .text(jsonData[index].roi);
+                                                 .text(jsonData[index].name);
                     }
                 }
 
@@ -296,6 +305,7 @@
                 root = jsonData[initialTreeIndex];
                 root.x0 = height / 2;
                 root.y0 = 0;
+                currentRoot = root;
 
                 function collapse(d) {
                     
@@ -321,6 +331,17 @@
             // Function to generate the html for the tool tip based on data
             function toolTipHTML(p_data) {
 
+                var fieldsHTML = [
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>scale:</b></span> " + p_data.scale + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>roi:</b></span> " + p_data.roi + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>name:</b></span> " + p_data.name + "<br>",
+                    "<hr style=\"text-align: center; width: 90%;\">",                    
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>laterality:</b></span> " + p_data.laterality + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>overlap:</b></span> " + parseFloat(p_data.overlap).toFixed(2) + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>size:</b></span> " + p_data.size + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>symmetry:</b></span> " + p_data.symmetry + "<br>"
+                ];
+                return fieldsHTML.join("");
             };
 
             // Set background color;
@@ -337,9 +358,16 @@
                 root.x0 = height / 2;
                 root.y0 = 0;
                 root.children.forEach(expand);
+                currentRoot = root;
                 update(root);             
-            });           
+            });
 
+            d3.selectAll(".simexp_tree_button").on("click", function(){
+
+                click(currentRoot);
+            });       
+
+            // Adapted from https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
             function setNodeLabelBackground(p_textNode){
 
                 var context = p_textNode.node().parentNode,
@@ -392,19 +420,19 @@
                     .on("mouseover", function(d) {
 
                         var tooltip_div = d3.select(".simexp_tree_tooltip");
-                        tooltip_div.transition()        
-                            .duration(200)      
-                            .style("opacity", .9);      
-                        tooltip_div.html(d.name)  
-                            .style("left", (d3.event.pageX) + "px")     
-                            .style("top", (d3.event.pageY - 28) + "px");    
+                        tooltip_div.transition()
+                                   .duration(200)      
+                                   .style("opacity", .9);      
+                        tooltip_div.html(function(){ return toolTipHTML(d); }) 
+                                   .style("left", (d3.event.pageX) + "px")     
+                                   .style("top", (d3.event.pageY - 28) + "px");    
                         })                  
                     .on("mouseout", function(d) {  
 
                         var tooltip_div = d3.select(".simexp_tree_tooltip");     
-                        tooltip_div.transition()        
-                            .duration(500)      
-                            .style("opacity", 0);   
+                        tooltip_div.transition()
+                                   .duration(500)      
+                                   .style("opacity", 0);   
                     });
 
                 nodeEnter.append("text")
@@ -561,7 +589,7 @@
                     d._children.forEach(collapse);
                     d.children = null;
                 }
-            }            
+            } 
 
             function expandAll(){
                 expand(root); 
