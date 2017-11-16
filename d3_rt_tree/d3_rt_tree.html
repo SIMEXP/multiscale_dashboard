@@ -104,8 +104,8 @@
     <body>
         <header>
             <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select id="simexp_tree_roi_selector"></select></label>
-            <button class="simexp_tree_button" style="margin-left: 50px;" onclick="expandAll">Expand All</button>
-            <button class="simexp_tree_button" onclick="collapseAll">Collapse All</button>
+            <button class="simexp_tree_button" style="margin-left: 50px;" onclick="expandAll()">Expand All</button>
+            <button class="simexp_tree_button" onclick="collapseAll()">Collapse All</button>
         </header>        
         <div id="simexp_tree_div"></div>
 
@@ -362,10 +362,10 @@
                 update(root);             
             });
 
-            d3.selectAll(".simexp_tree_button").on("click", function(){
+            // d3.selectAll(".simexp_tree_button").on("click", function(){
 
-                click(currentRoot);
-            });       
+            //     click(currentRoot);
+            // });       
 
             // Adapted from https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
             function setNodeLabelBackground(p_textNode){
