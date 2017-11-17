@@ -87,27 +87,46 @@
             }
 
         </style>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
 
     <!--
 
     Task List:
 
-    (1) Color scaled edges
-    (2) Tree/window scaling
-    (3) Colored text for scale label - name field colored by colordict associated with scale field
-    (4) Dropdown menu to switch between scale 7 mass regions
     (5) Alternate implementation with whole brain
 
     -->
 
     <body>
-        <header>
-            <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select id="simexp_tree_roi_selector"></select></label>
-            <button class="simexp_tree_button" style="margin-left: 50px;" onclick="expandAll()">Expand All</button>
-            <button class="simexp_tree_button" onclick="collapseAll()">Collapse All</button>
-        </header>
-        <div id="simexp_tree_div"></div>
+        <div class="container-fluid">
+            <!-- Tree controls -->
+            <div class="row" style="margin-top: 10px; margin-left: 10px;">
+                <header>
+                    <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select id="simexp_tree_roi_selector"></select></label>
+                    <button class="simexp_tree_button" style="margin-left: 50px;" onclick="expandAll()">Expand All</button>
+                    <button class="simexp_tree_button" onclick="collapseAll()">Collapse All</button>
+                </header>
+            </div>
+            <!-- Tree and Viewers -->
+            <div class="row">
+                <!-- Tree -->
+                <div class="col-md-8">
+                    <div id="simexp_tree_div"></div>
+                </div>
+                <!-- Brainsprite Viewers -->
+                <div class="col-md-4">
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- D3.js -->
         <script src="https://d3js.org/d3.v3.min.js"></script>
