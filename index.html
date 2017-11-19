@@ -112,36 +112,34 @@
             </div>
             <!-- Tree and Viewers -->
             <div class="row">
+              <!-- Brainsprite Viewers -->
+              <div class="col-sm-4">
+                <div id="parentText" class="simexp_selector_label">
+                  Parent
+                </div>
+                  <canvas id="parcelParent" >
+                <img id="template" class="hidden" src="./img/icbm_2009c_brain.png">
+                <img id="parent" class="hidden" src="./img/resolution_s12_roi_5.png">
+                <img id="children" class="hidden" src="./img/resolution_s12_roi_5_children.png">
+                <img id="target" class="hidden" src="./img/resolution_s36_roi_5.png">
+              </div>
+              <div class="col-sm-4">
+                <div id="childrenText" class="simexp_selector_label">
+                  Children
+                </div>
+                <canvas id="parcelChildren">
+              </div>
+              <div class="col-sm-4">
+                <div id="targetText" class="simexp_selector_label">
+                  Target
+                </div>
+                <canvas id="parcelTarget">
+              </div>
                 <!-- Tree -->
-                <div class="col-md-9">
+                <div class="col-md-12">
                     <div id="simexp_tree_div"></div>
                 </div>
-                <!-- Brainsprite Viewers -->
-                <div class="col-md-3">
-                    <div id="parentText" class="simexp_selector_label">
-                      <span:text> Parent </span>
-                    </div>
-                    <div class="row">
-                      <canvas id="parcelParent" >
-                      <img id="template" class="hidden" src="./img/icbm_2009c_brain.png">
-                      <img id="parent" class="hidden" src="./img/resolution_s12_roi_5.png">
-                      <img id="children" class="hidden" src="./img/resolution_s12_roi_5_children.png">
-                      <img id="target" class="hidden" src="./img/resolution_s36_roi_5.png">
-                    </div>
-                    <div id="childrenText" class="simexp_selector_label">
-                      Children
-                    </div>
 
-                    <div class="row">
-                      <canvas id="parcelChildren">
-                    </div>
-                    <div id="targetText" class="simexp_selector_label">
-                      Target
-                    </div>
-                    <div class="row">
-                      <canvas id="parcelTarget">
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -152,7 +150,7 @@
         <!-- Script for collapsible Reingold-Tilford tree from: https://bl.ocks.org/mbostock/4339083 -->
         <!-- Script for hover tooltip from http://bl.ocks.org/d3noob/a22c42db65eb00d4e369 -->
         <script>
-      
+
             <!--Generate a viewer for parent parcel--!>
             var brainParent = brainsprite({
               canvas: "parcelParent",
@@ -161,7 +159,7 @@
               colorBackground: "#000000",
               colorFont: "#FFFFFF",
               flagCoordinates: true,
-              origin: {X: 98.000, Y:134.000, Z:72.000},
+              origin: {X: 96.000, Y:132.000, Z:78.000},
               voxelSize: 1.000,
               overlay: {
                 sprite: "parent",
@@ -185,7 +183,7 @@
               colorBackground: "#000000",
               colorFont: "#FFFFFF",
               flagCoordinates: true,
-              origin: {X: 98.000, Y:134.000, Z:72.000},
+              origin: {X: 96.000, Y:132.000, Z:78.000},
               voxelSize: 1.000,
               overlay: {
                 sprite: "children",
@@ -209,7 +207,7 @@
               colorBackground: "#000000",
               colorFont: "#FFFFFF",
               flagCoordinates: true,
-              origin: {X: 98.000, Y:134.000, Z:72.000},
+              origin: {X: 96.000, Y:132.000, Z:78.000},
               voxelSize: 1.000,
               overlay: {
                 sprite: "target",
@@ -671,7 +669,13 @@
             function click(d) {
               <!--Update figures-->
               $("#parentText").text("Parent (" + d.parent.scale + "): " + d.parent.name);
+              brainParent.numSlice.X = Math.round((d.com[0]+brainParent.origin.X)/brainParent.voxelSize);
+              brainParent.numSlice.Y = Math.round((d.com[1]+brainParent.origin.Y)/brainParent.voxelSize);
+              brainParent.numSlice.Z = brainParent.nbSlice.Z-Math.round((d.com[2]+brainParent.origin.Z)/brainParent.voxelSize)-1;
+              brainChildren.numSlice = brainParent.numSlice;
+              brainTarget.numSlice = brainParent.numSlice;
               brainParent.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + ".png";
+
               $("#childrenText").text("All children ("+ d.scale + ") of " + d.parent.name);
               brainChildren.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + "_children.png";
               $("#targetText").text("Parcel (" + d.scale + "): " + d.name);
