@@ -659,16 +659,10 @@
 
             // Toggle children on click.
             function click(d) {
-                if ( d.children ) {
-
-                    d._children = d.children;
-                    d.children = null;
-                } else {
-
-                    d.children = d._children;
-                    d._children = null;
-                }
-                update(d);
+              <!--Update figures-->
+              brainParent.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + ".png";
+              brainChildren.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + "_children.png";
+              brainTarget.overlay.sprite.src = "./img/resolution_" + d.scale + "_roi_" + d.roi + ".png";
             }
 
             // Update brain sprite on double click.
