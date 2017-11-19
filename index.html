@@ -113,16 +113,23 @@
             <!-- Tree and Viewers -->
             <div class="row">
                 <!-- Tree -->
-                <div class="col-md-8">
+                <div class="col-md-9">
                     <div id="simexp_tree_div"></div>
                 </div>
                 <!-- Brainsprite Viewers -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="row">
+                      <canvas id="parcelParent">
+                      <img id="template" class="hidden" src="./img/icbm_2009c_brain.png">
+                      <img id="parent" class="hidden" src="./img/resolution_s12_roi_5.png">
+                      <img id="children" class="hidden" src="./img/resolution_s12_roi_5_children.png">
+                      <img id="target" class="hidden" src="./img/resolution_s36_roi_5.png">
                     </div>
                     <div class="row">
+                      <canvas id="parcelChildren">
                     </div>
                     <div class="row">
+                      <canvas id="parcelTarget">
                     </div>
                 </div>
             </div>
@@ -130,10 +137,83 @@
 
         <!-- D3.js -->
         <script src="https://d3js.org/d3.v3.min.js"></script>
+        <script type="text/javascript" src="brainsprite.js"></script>
 
         <!-- Script for collapsible Reingold-Tilford tree from: https://bl.ocks.org/mbostock/4339083 -->
         <!-- Script for hover tooltip from http://bl.ocks.org/d3noob/a22c42db65eb00d4e369 -->
         <script>
+
+            <!--Generate a viewer for parent parcel--!>
+            var brainParent = brainsprite({
+              canvas: "parcelParent",
+              sprite: "template",
+              nbSlice: { 'Y':229 , 'Z':193 },
+              colorBackground: "#000000",
+              colorFont: "#FFFFFF",
+              flagCoordinates: true,
+              origin: {X: 98.000, Y:134.000, Z:72.000},
+              voxelSize: 1.000,
+              overlay: {
+                sprite: "parent",
+                smooth: true,
+                nbSlice: { 'Y':229 , 'Z':193 },
+                opacity: 0.5
+              },
+              onclick: function(e) {
+                brainChildren.numSlice = brainParent.numSlice;
+                brainTarget.numSlice = brainParent.numSlice;
+                brainChildren.drawAll();
+                brainTarget.drawAll();
+              },
+            });
+
+            <!--Generate a viewer for children parcels--!>
+            var brainChildren = brainsprite({
+              canvas: "parcelChildren",
+              sprite: "template",
+              nbSlice: { 'Y':229 , 'Z':193 },
+              colorBackground: "#000000",
+              colorFont: "#FFFFFF",
+              flagCoordinates: true,
+              origin: {X: 98.000, Y:134.000, Z:72.000},
+              voxelSize: 1.000,
+              overlay: {
+                sprite: "children",
+                smooth: true,
+                nbSlice: { 'Y':229 , 'Z':193 },
+                opacity: 0.5
+              },
+              onclick: function(e) {
+                brainParent.numSlice = brainChildren.numSlice;
+                brainTarget.numSlice = brainChildren.numSlice;
+                brainParent.drawAll();
+                brainTarget.drawAll();
+              },
+            });
+
+            <!--Generate a viewer for target parcel--!>
+            var brainTarget = brainsprite({
+              canvas: "parcelTarget",
+              sprite: "template",
+              nbSlice: { 'Y':229 , 'Z':193 },
+              colorBackground: "#000000",
+              colorFont: "#FFFFFF",
+              flagCoordinates: true,
+              origin: {X: 98.000, Y:134.000, Z:72.000},
+              voxelSize: 1.000,
+              overlay: {
+                sprite: "target",
+                smooth: true,
+                nbSlice: { 'Y':229 , 'Z':193 },
+                opacity: 0.5
+              },
+              onclick: function(e) {
+                brainParent.numSlice = brainTarget.numSlice;
+                brainChildren.numSlice = brainTarget.numSlice;
+                brainParent.drawAll();
+                brainChildren.drawAll();
+              },
+            });
 
             // Color parameters
             var backgroundColor = "slategrey";
@@ -175,7 +255,7 @@
 
             // var orig_width = 960;
             // var orig_height = 800;
-            var full_width = 2880;
+            var full_width = 1500;
             // var full_height = 960;
             var full_height = 1440;
             var margin = {
@@ -426,7 +506,8 @@
                     .attr("transform", function(d) {
                         return "translate(" + source.y0 + "," + source.x0 + ")";
                     })
-                    .on("click", click);
+                    .on("click", click)
+                    .on("dblclick",dblclick);
 
                 nodeEnter.append("circle")
                     .attr("r", 1e-6)
@@ -588,6 +669,14 @@
                     d._children = null;
                 }
                 update(d);
+            }
+
+            // Update brain sprite on double click.
+            function dblclick(d) {
+              <!--Update figures-->
+              brainParent.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + ".png";
+              brainChildren.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + "_children.png";
+              brainTarget.overlay.sprite.src = "./img/resolution_" + d.scale + "_roi_" + d.roi + ".png";
             }
 
             // ========= Expand all/Collapse all section =========
