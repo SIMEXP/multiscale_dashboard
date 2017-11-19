@@ -118,15 +118,25 @@
                 </div>
                 <!-- Brainsprite Viewers -->
                 <div class="col-md-3">
+                    <div id="parentText" class="simexp_selector_label">
+                      <span:text> Parent </span>
+                    </div>
                     <div class="row">
-                      <canvas id="parcelParent">
+                      <canvas id="parcelParent" >
                       <img id="template" class="hidden" src="./img/icbm_2009c_brain.png">
                       <img id="parent" class="hidden" src="./img/resolution_s12_roi_5.png">
                       <img id="children" class="hidden" src="./img/resolution_s12_roi_5_children.png">
                       <img id="target" class="hidden" src="./img/resolution_s36_roi_5.png">
                     </div>
+                    <div id="childrenText" class="simexp_selector_label">
+                      Children
+                    </div>
+
                     <div class="row">
                       <canvas id="parcelChildren">
+                    </div>
+                    <div id="targetText" class="simexp_selector_label">
+                      Target
                     </div>
                     <div class="row">
                       <canvas id="parcelTarget">
@@ -142,7 +152,7 @@
         <!-- Script for collapsible Reingold-Tilford tree from: https://bl.ocks.org/mbostock/4339083 -->
         <!-- Script for hover tooltip from http://bl.ocks.org/d3noob/a22c42db65eb00d4e369 -->
         <script>
-
+      
             <!--Generate a viewer for parent parcel--!>
             var brainParent = brainsprite({
               canvas: "parcelParent",
@@ -660,17 +670,17 @@
             // Toggle children on click.
             function click(d) {
               <!--Update figures-->
+              $("#parentText").text("Parent (" + d.parent.scale + "): " + d.parent.name);
               brainParent.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + ".png";
+              $("#childrenText").text("All children ("+ d.scale + ") of " + d.parent.name);
               brainChildren.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + "_children.png";
+              $("#targetText").text("Parcel (" + d.scale + "): " + d.name);
               brainTarget.overlay.sprite.src = "./img/resolution_" + d.scale + "_roi_" + d.roi + ".png";
             }
 
             // Update brain sprite on double click.
             function dblclick(d) {
-              <!--Update figures-->
-              brainParent.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + ".png";
-              brainChildren.overlay.sprite.src = "./img/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + "_children.png";
-              brainTarget.overlay.sprite.src = "./img/resolution_" + d.scale + "_roi_" + d.roi + ".png";
+              click(d)
             }
 
             // ========= Expand all/Collapse all section =========
