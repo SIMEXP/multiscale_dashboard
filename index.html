@@ -119,9 +119,9 @@
                 </div>
                   <canvas id="parcelParent" >
                 <img id="template" class="hidden" src="./img/icbm_2009c_brain.png">
-                <img id="parent" class="hidden" src="./img/resolution_s12_roi_5.png">
-                <img id="children" class="hidden" src="./img/resolution_s12_roi_5_children.png">
-                <img id="target" class="hidden" src="./img/resolution_s36_roi_5.png">
+                <img id="parent" class="hidden" src="./img/resolution_s12_roi_12.png">
+                <img id="children" class="hidden" src="./img/resolution_s12_roi_12_children.png">
+                <img id="target" class="hidden" src="./img/resolution_s36_roi_1.png">
               </div>
               <div class="col-sm-4">
                 <div id="childrenText" class="simexp_selector_label">
@@ -466,6 +466,23 @@
                 root.y0 = 0;
                 root.children.forEach(expand);
                 currentRoot = root;
+                if (root.children.length==1) {
+                  var base = root.children[0].children[0];
+                } else {
+                  var base = root.children[0];
+                };
+                var d = {
+                  parent:  {
+                    name:  base.parentName,
+                    roi:   base.parentROI,
+                    scale: base.parentScale
+                  },
+                  roi:   base.roi,
+                  name:  base.name,
+                  scale: base.scale,
+                  com:   base.com
+                };
+                click(d)
                 update(root);
             });
 
