@@ -242,7 +242,7 @@
 
             // Load the tree JSON
             var jsonDataRef = null;
-            d3.json("d3_rt_tree/data/hierarchy_tree_inferno.json", function(error, jsonData) {
+            d3.json("./data/hierarchy_tree_inferno.json", function(error, jsonData) {
 
                 // Save a reference to the json data
                 jsonDataRef = jsonData;
@@ -588,8 +588,6 @@
                     .attr("stroke", function(d){
                         return d.target.color;
                     });
-
-                // 730362 + (0.9761786600496278 * 2086795)
 
                 // Transition links to their new position.
                 link.transition()
