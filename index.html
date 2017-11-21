@@ -210,7 +210,8 @@
             };                
 
             // Trees start out at scale level 12 and go up/down with the Expand/Collapse button
-            var treeScaleLevel = 12;                
+            // var treeScaleLevel = 12;
+            var treeScaleLevel = scaleTextDict["roi"];               
 
             // Keep track of all tree nodes in a list of lists for easy expand/collapse
             var nodeScaleDict = null;
@@ -267,7 +268,8 @@
                 // Populate a select box for the different scales
                 var selector = d3.select("#simexp_tree_scale_selector");
                 for ( var index = 0; index < Object.keys(scaleTextDict).length; index++ ) {
-                    if ( 0 == index ) {
+                    // if ( 0 == index ) {
+                    if ( Object.keys(scaleTextDict).length - 1 == index ){
                         
                         // selector.append("option").attr("value", scaleTextDict[Object.keys(scaleTextDict)[index]])
                         selector.append("option").attr("value", Object.keys(scaleTextDict)[index])
@@ -316,6 +318,9 @@
 
                 // Keep track of all nodes in a flat dict for easy browsing
                 populateNodeScaleDict(root);
+
+                // Make sure tree starts at max scale
+                expandToScaleLevel();
             });
 
             // For iframe insertion (?)
