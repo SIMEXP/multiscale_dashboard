@@ -379,7 +379,10 @@
                 // Keep track of all nodes in a flat dict for easy browsing
                 populateNodeScaleDict(root);
 
+                // Trick redraw to sticking with scale level in dropdown
                 update(root);
+                treeScaleLevel = scaleTextDict["roi"];
+                chooseExpandOrCollapseToScaleLevel();
             });
 
             // Adapted from https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
@@ -627,7 +630,11 @@
                     d = d.children[0];
 
                 <!--Update figures-->
-                $("#parentText").text("Parent (" + d.parent.scale + "): " + d.parent.name);
+                var maxChars = 40;
+                var parentName = d.parent.name;
+                if ( parentName.length > 40 )
+                    parentName = parentName.substring(0, maxChars) + "...";
+                $("#parentText").text("Parent (" + d.parent.scale + "): " + parentName);
                 brainParent.numSlice.X = Math.round((d.com[0]+brainParent.origin.X)/brainParent.voxelSize);
                 brainParent.numSlice.Y = Math.round((d.com[1]+brainParent.origin.Y)/brainParent.voxelSize);
                 brainParent.numSlice.Z = brainParent.nbSlice.Z-Math.round((d.com[2]+brainParent.origin.Z)/brainParent.voxelSize)-1;
@@ -635,9 +642,12 @@
                 brainTarget.numSlice = brainParent.numSlice;
                 brainParent.overlay.sprite.src = "./images/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + ".png";
 
-                $("#childrenText").text("All children ("+ d.scale + ") of " + d.parent.name);
+                $("#childrenText").text("All children ("+ d.scale + ") of " + parentName);
                 brainChildren.overlay.sprite.src = "./images/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + "_children.png";
-                $("#targetText").text("Parcel (" + d.scale + "): " + d.name);
+                var targetName = d.name;
+                if ( targetName.length > 40 )
+                    targetName = targetName.substring(0, maxChars) + "...";
+                $("#targetText").text("Parcel (" + d.scale + "): " + targetName);
                 brainTarget.overlay.sprite.src = "./images/resolution_" + d.scale + "_roi_" + d.roi + ".png";
             }
 
