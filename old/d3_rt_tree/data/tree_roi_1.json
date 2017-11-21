@@ -1,0 +1,994 @@
+{
+  "1": {
+    "roi": 1,
+    "scale": "s7",
+    "name": "CEREBELLUM",
+    "symmetry": 0.96,
+    "laterality": 0.014,
+    "overlap": 0,
+    "label": "CER",
+    "COM": [
+      -0.41,
+      -64.36,
+      -35.89
+    ],
+    "Children": [
+      {
+        "roi": 12,
+        "scale": "s12",
+        "name": "CEREBELLUM",
+        "symmetry": 0.96,
+        "laterality": 0.014,
+        "overlap": 1,
+        "label": "CER",
+        "COM": [
+          -0.41,
+          -64.36,
+          -35.89
+        ],
+        "Children": [
+          {
+            "roi": 1,
+            "scale": "s36",
+            "name": "CEREBELLUM_I-V",
+            "symmetry": 0.91,
+            "laterality": 0.006999999999999999,
+            "overlap": 1,
+            "label": "CER5",
+            "COM": [
+              -0.4,
+              -46.11,
+              -23.17
+            ],
+            "Children": [
+              {
+                "roi": 6,
+                "scale": "s64",
+                "name": "CEREBELLUM_I-V",
+                "symmetry": 0.91,
+                "laterality": 0.006999999999999999,
+                "overlap": 1,
+                "label": "CER5",
+                "COM": [
+                  -0.4,
+                  -46.11,
+                  -23.17
+                ],
+                "Children": [
+                  {
+                    "roi": 48,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_I-V",
+                    "symmetry": 0.91,
+                    "laterality": 0.006999999999999999,
+                    "overlap": 1,
+                    "label": "CER5",
+                    "COM": [
+                      -0.4,
+                      -46.11,
+                      -23.17
+                    ],
+                    "Children": [
+                      {
+                        "roi": 85,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_I-V",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER5",
+                        "COM": [
+                          -15.13,
+                          -45.74,
+                          -23.64
+                        ],
+                        "Children": [],
+                        "size": 358
+                      },
+                      {
+                        "roi": 86,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_I-V",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER5",
+                        "COM": [
+                          14.5,
+                          -45.67,
+                          -23.53
+                        ],
+                        "Children": [],
+                        "size": 353
+                      }
+                    ],
+                    "size": 747
+                  }
+                ],
+                "size": 747
+              }
+            ],
+            "size": 747
+          },
+          {
+            "roi": 5,
+            "scale": "s36",
+            "name": "CEREBELLUM_IX",
+            "symmetry": 0.87,
+            "laterality": 0.062,
+            "overlap": 1,
+            "label": "CER9",
+            "COM": [
+              -0.57,
+              -53.31,
+              -45.54
+            ],
+            "Children": [
+              {
+                "roi": 48,
+                "scale": "s64",
+                "name": "CEREBELLUM_IX",
+                "symmetry": 0.87,
+                "laterality": 0.062,
+                "overlap": 1,
+                "label": "CER9",
+                "COM": [
+                  -0.57,
+                  -53.31,
+                  -45.54
+                ],
+                "Children": [
+                  {
+                    "roi": 11,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_IX_dorsal",
+                    "symmetry": 0.85,
+                    "laterality": 0.08900000000000001,
+                    "overlap": 1,
+                    "label": "CER9_d",
+                    "COM": [
+                      -0.56,
+                      -63.06,
+                      -38.71
+                    ],
+                    "Children": [
+                      {
+                        "roi": 18,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_IX_dorsal",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER9_d",
+                        "COM": [
+                          -7.21,
+                          -63.21,
+                          -38.9
+                        ],
+                        "Children": [],
+                        "size": 117
+                      },
+                      {
+                        "roi": 19,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_IX_dorsal",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER9_d",
+                        "COM": [
+                          7.44,
+                          -63.3,
+                          -38.06
+                        ],
+                        "Children": [],
+                        "size": 94
+                      }
+                    ],
+                    "size": 258
+                  },
+                  {
+                    "roi": 14,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_IX_ventral",
+                    "symmetry": 0.6,
+                    "laterality": 0.232,
+                    "overlap": 1,
+                    "label": "CER9_v",
+                    "COM": [
+                      -2.28,
+                      -54.74,
+                      -56.99
+                    ],
+                    "Children": [
+                      {
+                        "roi": 24,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_IX_ventral",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER9_v",
+                        "COM": [
+                          -8.08,
+                          -55.38,
+                          -56.5
+                        ],
+                        "Children": [],
+                        "size": 133
+                      },
+                      {
+                        "roi": 25,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_IX_ventral",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER9_v",
+                        "COM": [
+                          6.75,
+                          -54.49,
+                          -58.41
+                        ],
+                        "Children": [],
+                        "size": 76
+                      }
+                    ],
+                    "size": 246
+                  },
+                  {
+                    "roi": 65,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_IX_middle",
+                    "symmetry": 0.81,
+                    "laterality": -0.043,
+                    "overlap": 1,
+                    "label": "CER9_m",
+                    "COM": [
+                      0.32,
+                      -47.11,
+                      -43.26
+                    ],
+                    "Children": [
+                      {
+                        "roi": 113,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_IX_middle",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER9_m",
+                        "COM": [
+                          11.9,
+                          -47.03,
+                          -44.13
+                        ],
+                        "Children": [],
+                        "size": 231
+                      },
+                      {
+                        "roi": 114,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_IX_middle",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER9_m",
+                        "COM": [
+                          -12.31,
+                          -47.15,
+                          -42.62
+                        ],
+                        "Children": [],
+                        "size": 211
+                      }
+                    ],
+                    "size": 462
+                  }
+                ],
+                "size": 966
+              }
+            ],
+            "size": 966
+          },
+          {
+            "roi": 6,
+            "scale": "s36",
+            "name": "CEREBELLUM_VIIb",
+            "symmetry": 0.66,
+            "laterality": -0.104,
+            "overlap": 1,
+            "label": "CER7b",
+            "COM": [
+              -0.1,
+              -71.52,
+              -52.09
+            ],
+            "Children": [
+              {
+                "roi": 15,
+                "scale": "s64",
+                "name": "CEREBELLUM_VIIb",
+                "symmetry": 0.66,
+                "laterality": -0.104,
+                "overlap": 1,
+                "label": "CER7b",
+                "COM": [
+                  -0.1,
+                  -71.52,
+                  -52.09
+                ],
+                "Children": [
+                  {
+                    "roi": 18,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_VIIb_medial",
+                    "symmetry": 0.5,
+                    "laterality": -0.248,
+                    "overlap": 1,
+                    "label": "CER7b_m",
+                    "COM": [
+                      1.9,
+                      -79.54,
+                      -48.01
+                    ],
+                    "Children": [
+                      {
+                        "roi": 31,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_VIIb_medial",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER7b_m",
+                        "COM": [
+                          -28.67,
+                          -77.97,
+                          -50.46
+                        ],
+                        "Children": [],
+                        "size": 158
+                      },
+                      {
+                        "roi": 32,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_VIIb_medial",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER7b_m",
+                        "COM": [
+                          20.34,
+                          -80.48,
+                          -46.53
+                        ],
+                        "Children": [],
+                        "size": 262
+                      }
+                    ],
+                    "size": 420
+                  },
+                  {
+                    "roi": 46,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_VIIb_lateral",
+                    "symmetry": 0.54,
+                    "laterality": 0.048,
+                    "overlap": 1,
+                    "label": "CER7b_l",
+                    "COM": [
+                      -2.21,
+                      -63.02,
+                      -56.42
+                    ],
+                    "Children": [
+                      {
+                        "roi": 81,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_VIIb_lateral",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER7b_l",
+                        "COM": [
+                          -20.78,
+                          -64.35,
+                          -56.57
+                        ],
+                        "Children": [],
+                        "size": 207
+                      },
+                      {
+                        "roi": 82,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_VIIb_lateral",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER7b_l",
+                        "COM": [
+                          18.22,
+                          -61.49,
+                          -56.34
+                        ],
+                        "Children": [],
+                        "size": 188
+                      }
+                    ],
+                    "size": 396
+                  }
+                ],
+                "size": 816
+              }
+            ],
+            "size": 816
+          },
+          {
+            "roi": 7,
+            "scale": "s36",
+            "name": "CEREBELLUM_CRUSI",
+            "symmetry": 0.76,
+            "laterality": 0.098,
+            "overlap": 1,
+            "label": "CERCR1",
+            "COM": [
+              -3.75,
+              -79.71,
+              -21.9
+            ],
+            "Children": [
+              {
+                "roi": 12,
+                "scale": "s64",
+                "name": "CEREBELLUM_CRUSI",
+                "symmetry": 0.76,
+                "laterality": 0.098,
+                "overlap": 1,
+                "label": "CERCR1",
+                "COM": [
+                  -3.75,
+                  -79.71,
+                  -21.9
+                ],
+                "Children": [
+                  {
+                    "roi": 41,
+                    "scale": "s122",
+                    "name": "NOISE",
+                    "symmetry": 0.81,
+                    "laterality": 0.112,
+                    "overlap": 1,
+                    "label": "N",
+                    "COM": [
+                      -2.3,
+                      -93.24,
+                      -14.98
+                    ],
+                    "Children": [
+                      {
+                        "roi": 71,
+                        "scale": "sROI",
+                        "name": "left_NOISE",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_N",
+                        "COM": [
+                          -18.24,
+                          -93.29,
+                          -14.99
+                        ],
+                        "Children": [],
+                        "size": 216
+                      },
+                      {
+                        "roi": 72,
+                        "scale": "sROI",
+                        "name": "right_NOISE",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_N",
+                        "COM": [
+                          17.63,
+                          -93.4,
+                          -15.21
+                        ],
+                        "Children": [],
+                        "size": 171
+                      }
+                    ],
+                    "size": 401
+                  },
+                  {
+                    "roi": 84,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_CRUSI",
+                    "symmetry": 0.68,
+                    "laterality": 0.008,
+                    "overlap": 0.9242424242424242,
+                    "label": "CERCR1",
+                    "COM": [
+                      -2.68,
+                      -73.36,
+                      -24.83
+                    ],
+                    "Children": [
+                      {
+                        "roi": 145,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_CRUSI",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CERCR1",
+                        "COM": [
+                          -36.2,
+                          -70.53,
+                          -25.71
+                        ],
+                        "Children": [],
+                        "size": 399
+                      },
+                      {
+                        "roi": 146,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_CRUSI",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CERCR1",
+                        "COM": [
+                          31.34,
+                          -76.23,
+                          -23.94
+                        ],
+                        "Children": [],
+                        "size": 393
+                      }
+                    ],
+                    "size": 792
+                  }
+                ],
+                "size": 1133
+              }
+            ],
+            "size": 1133
+          },
+          {
+            "roi": 13,
+            "scale": "s36",
+            "name": "CEREBELLUM_VI_VIIIab",
+            "symmetry": 0.84,
+            "laterality": 0.029,
+            "overlap": 1,
+            "label": "CER8ab",
+            "COM": [
+              -0.74,
+              -58.19,
+              -34.64
+            ],
+            "Children": [
+              {
+                "roi": 5,
+                "scale": "s64",
+                "name": "CEREBELLUM_VIIIab",
+                "symmetry": 0.83,
+                "laterality": 0.06,
+                "overlap": 1,
+                "label": "CER7ab",
+                "COM": [
+                  -1.59,
+                  -53.96,
+                  -51.08
+                ],
+                "Children": [
+                  {
+                    "roi": 108,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_VIIIab",
+                    "symmetry": 0.83,
+                    "laterality": 0.06,
+                    "overlap": 1,
+                    "label": "CER7ab",
+                    "COM": [
+                      -1.59,
+                      -53.96,
+                      -51.08
+                    ],
+                    "Children": [
+                      {
+                        "roi": 185,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_VIIIab",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER7ab",
+                        "COM": [
+                          -25.77,
+                          -54.44,
+                          -51.16
+                        ],
+                        "Children": [],
+                        "size": 274
+                      },
+                      {
+                        "roi": 186,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_VIIIab",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER7ab",
+                        "COM": [
+                          25.68,
+                          -53.42,
+                          -50.99
+                        ],
+                        "Children": [],
+                        "size": 243
+                      }
+                    ],
+                    "size": 517
+                  }
+                ],
+                "size": 517
+              },
+              {
+                "roi": 29,
+                "scale": "s64",
+                "name": "CEREBELLUM_VI",
+                "symmetry": 0.85,
+                "laterality": 0.015,
+                "overlap": 1,
+                "label": "CER6",
+                "COM": [
+                  -0.36,
+                  -60.13,
+                  -27.13
+                ],
+                "Children": [
+                  {
+                    "roi": 9,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_VI_posterior",
+                    "symmetry": 0.79,
+                    "laterality": 0.038,
+                    "overlap": 1,
+                    "label": "CER6_p",
+                    "COM": [
+                      -0.36,
+                      -75.94,
+                      -33.25
+                    ],
+                    "Children": [
+                      {
+                        "roi": 14,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_VI_posterior",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER6_p",
+                        "COM": [
+                          -5.82,
+                          -75.64,
+                          -34.18
+                        ],
+                        "Children": [],
+                        "size": 66
+                      },
+                      {
+                        "roi": 15,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_VI_posterior",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER6_p",
+                        "COM": [
+                          5.45,
+                          -75.7,
+                          -33.5
+                        ],
+                        "Children": [],
+                        "size": 60
+                      }
+                    ],
+                    "size": 159
+                  },
+                  {
+                    "roi": 44,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_VI_dorsal",
+                    "symmetry": 0.72,
+                    "laterality": -0.079,
+                    "overlap": 1,
+                    "label": "CER6_d",
+                    "COM": [
+                      1.08,
+                      -64.68,
+                      -19.57
+                    ],
+                    "Children": [
+                      {
+                        "roi": 77,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_VI_dorsal",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER6_d",
+                        "COM": [
+                          -18.06,
+                          -62.85,
+                          -19.77
+                        ],
+                        "Children": [],
+                        "size": 186
+                      },
+                      {
+                        "roi": 78,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_VI_dorsal",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER6_d",
+                        "COM": [
+                          17.39,
+                          -65.53,
+                          -19.86
+                        ],
+                        "Children": [],
+                        "size": 220
+                      }
+                    ],
+                    "size": 430
+                  },
+                  {
+                    "roi": 97,
+                    "scale": "s122",
+                    "name": "CEREBELLUM_VI_anterior",
+                    "symmetry": 0.71,
+                    "laterality": 0.083,
+                    "overlap": 1,
+                    "label": "CER6_a",
+                    "COM": [
+                      -1.5,
+                      -51.89,
+                      -31.33
+                    ],
+                    "Children": [
+                      {
+                        "roi": 167,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_VI_anterior",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CER6_a",
+                        "COM": [
+                          -26.45,
+                          -53.36,
+                          -31.25
+                        ],
+                        "Children": [],
+                        "size": 289
+                      },
+                      {
+                        "roi": 168,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_VI_anterior",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CER6_a",
+                        "COM": [
+                          28,
+                          -49.71,
+                          -31.74
+                        ],
+                        "Children": [],
+                        "size": 244
+                      }
+                    ],
+                    "size": 543
+                  }
+                ],
+                "size": 1132
+              }
+            ],
+            "size": 1649
+          },
+          {
+            "roi": 20,
+            "scale": "s36",
+            "name": "CEREBELLUM_CRUSII",
+            "symmetry": 0.8,
+            "laterality": -0.02,
+            "overlap": 1,
+            "label": "CERCR2",
+            "COM": [
+              1.81,
+              -70.24,
+              -38.42
+            ],
+            "Children": [
+              {
+                "roi": 11,
+                "scale": "s64",
+                "name": "CEREBELLUM_CRUSII_right",
+                "symmetry": 0,
+                "laterality": -1,
+                "overlap": 1,
+                "label": "R_CERCR2",
+                "COM": [
+                  32.67,
+                  -68.46,
+                  -38.41
+                ],
+                "Children": [
+                  {
+                    "roi": 62,
+                    "scale": "s122",
+                    "name": "right_CEREBELLUM_CRUSII_anterior",
+                    "symmetry": 0,
+                    "laterality": -1,
+                    "overlap": 1,
+                    "label": "R_CERCR2_a",
+                    "COM": [
+                      41.5,
+                      -60.93,
+                      -44.22
+                    ],
+                    "Children": [
+                      {
+                        "roi": 108,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_CRUSII_anterior",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CERCR2_a",
+                        "COM": [
+                          41.5,
+                          -60.93,
+                          -44.22
+                        ],
+                        "Children": [],
+                        "size": 455
+                      }
+                    ],
+                    "size": 455
+                  },
+                  {
+                    "roi": 121,
+                    "scale": "s122",
+                    "name": "right_CEREBELLUM_CRUSII_posterior",
+                    "symmetry": 0,
+                    "laterality": -1,
+                    "overlap": 1,
+                    "label": "R_CERCR2_p",
+                    "COM": [
+                      24.98,
+                      -75.02,
+                      -33.34
+                    ],
+                    "Children": [
+                      {
+                        "roi": 208,
+                        "scale": "sROI",
+                        "name": "right_CEREBELLUM_CRUSII_posterior",
+                        "symmetry": 0,
+                        "laterality": -1,
+                        "overlap": 1,
+                        "label": "R_CERCR2_p",
+                        "COM": [
+                          24.98,
+                          -75.02,
+                          -33.34
+                        ],
+                        "Children": [],
+                        "size": 522
+                      }
+                    ],
+                    "size": 522
+                  }
+                ],
+                "size": 977
+              },
+              {
+                "roi": 44,
+                "scale": "s64",
+                "name": "CEREBELLUM_CRUSII_left",
+                "symmetry": 0,
+                "laterality": 0.999,
+                "overlap": 1,
+                "label": "L_CERCR2",
+                "COM": [
+                  -30.27,
+                  -72.08,
+                  -38.44
+                ],
+                "Children": [
+                  {
+                    "roi": 54,
+                    "scale": "s122",
+                    "name": "left_CEREBELLUM_CRUSII_anterior",
+                    "symmetry": 0,
+                    "laterality": 1,
+                    "overlap": 1,
+                    "label": "L_CERCR2_a",
+                    "COM": [
+                      -40.3,
+                      -60.89,
+                      -42.97
+                    ],
+                    "Children": [
+                      {
+                        "roi": 95,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_CRUSII_anterior",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CERCR2_a",
+                        "COM": [
+                          -40.3,
+                          -60.89,
+                          -42.97
+                        ],
+                        "Children": [],
+                        "size": 403
+                      }
+                    ],
+                    "size": 403
+                  },
+                  {
+                    "roi": 90,
+                    "scale": "s122",
+                    "name": "left_CEREBELLUM_CRUSII_posterior",
+                    "symmetry": 0,
+                    "laterality": 0.998,
+                    "overlap": 1,
+                    "label": "L_CERCR2_p",
+                    "COM": [
+                      -22.75,
+                      -80.48,
+                      -35.04
+                    ],
+                    "Children": [
+                      {
+                        "roi": 157,
+                        "scale": "sROI",
+                        "name": "left_CEREBELLUM_CRUSII_posterior",
+                        "symmetry": 0,
+                        "laterality": 1,
+                        "overlap": 1,
+                        "label": "L_CERCR2_p",
+                        "COM": [
+                          -22.79,
+                          -80.48,
+                          -35.06
+                        ],
+                        "Children": [],
+                        "size": 536
+                      }
+                    ],
+                    "size": 537
+                  }
+                ],
+                "size": 940
+              }
+            ],
+            "size": 1917
+          }
+        ],
+        "size": 7228
+      }
+    ],
+    "size": 7228
+  }
+}

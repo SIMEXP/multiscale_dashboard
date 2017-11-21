@@ -67,15 +67,15 @@
             }
 
             .simexp_tree_tooltip {
-                position: absolute;         
-                text-align: left;         
-                /*width: 60px;                    
-                height: 28px;*/                   
-                padding: 5px;               
-                font-family: "Roboto", sans-serif;      
+                position: absolute;
+                text-align: left;
+                /*width: 60px;
+                height: 28px;*/
+                padding: 5px;
+                font-family: "Roboto", sans-serif;
                 font-size: 14px;
-                background: lightsteelblue;                 
-                border-radius: 8px;         
+                background: lightsteelblue;
+                border-radius: 8px;
                 pointer-events: none;
                 border-color: black;
             }
@@ -87,30 +87,49 @@
             }
 
         </style>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
 
     <!--
 
     Task List:
 
-    (1) Color scaled edges
-    (2) Tree/window scaling
-    (3) Colored text for scale label - name field colored by colordict associated with scale field
-    (4) Dropdown menu to switch between scale 7 mass regions
     (5) Alternate implementation with whole brain
- 
+
     -->
 
     <body>
-        <header>
-            <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select id="simexp_tree_roi_selector"></select></label>
-            <button class="simexp_tree_button" style="margin-left: 50px;" onclick="expandAll()">Expand All</button>
-            <button class="simexp_tree_button" onclick="collapseAll()">Collapse All</button>
-        </header>        
-        <div id="simexp_tree_div"></div>
+        <div class="container-fluid">
+            <!-- Tree controls -->
+            <div class="row" style="margin-top: 10px; margin-left: 10px;">
+                <header>
+                    <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select id="simexp_tree_roi_selector"></select></label>
+                    <button class="simexp_tree_button" style="margin-left: 50px;" onclick="expandAll()">Expand All</button>
+                    <button class="simexp_tree_button" onclick="collapseAll()">Collapse All</button>
+                </header>
+            </div>
+            <!-- Tree and Viewers -->
+            <div class="row">
+                <!-- Tree -->
+                <div class="col-md-8">
+                    <div id="simexp_tree_div"></div>
+                </div>
+                <!-- Brainsprite Viewers -->
+                <div class="col-md-4">
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- D3.js -->
-        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="https://d3js.org/d3.v3.min.js"></script>
 
         <!-- Script for collapsible Reingold-Tilford tree from: https://bl.ocks.org/mbostock/4339083 -->
         <!-- Script for hover tooltip from http://bl.ocks.org/d3noob/a22c42db65eb00d4e369 -->
@@ -127,7 +146,7 @@
 
 
             function getScaleColor(p_scale){
-                
+
                 var scaleColor = "black";
                 switch ( p_scale ){
 
@@ -171,7 +190,7 @@
 
             var i = 0,
                 duration = 750,
-                root;                
+                root;
 
             // Color blending method adapted from:
             // https://stackoverflow.com/questions/3080421/javascript-color-gradient
@@ -185,34 +204,34 @@
                 i = Math.round(Math.min (Math.max (0, i), 255));
 
                 return s.charAt ((i - i % 16) / 16) + s.charAt (i % 16);
-            }            
+            }
             /* Remove '#' in color hex string */
             function trimHex(s) {
 
-                return ( s.charAt(0) == "#" ) ? s.substring(1, 7) : s 
+                return ( s.charAt(0) == "#" ) ? s.substring(1, 7) : s
             };
             /* Convert an RGB triplet to a hex string */
             function convertToHex (rgb) {
 
                 return hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);
-            }            
+            }
             /* Convert a hex string to an RGB triplet */
             function convertToRGB (hex) {
-                
+
                 var color = [];
                 color[0] = parseInt ((trimHex(hex)).substring (0, 2), 16);
                 color[1] = parseInt ((trimHex(hex)).substring (2, 4), 16);
                 color[2] = parseInt ((trimHex(hex)).substring (4, 6), 16);
-                
+
                 return color;
             };
             function generateColor(colorStart,colorEnd,colorCount) {
 
                 // The beginning of your gradient
-                var start = convertToRGB (colorStart);    
+                var start = convertToRGB (colorStart);
 
                 // The end of your gradient
-                var end   = convertToRGB (colorEnd);    
+                var end   = convertToRGB (colorEnd);
 
                 // The number of colors to compute
                 var len = colorCount;
@@ -221,21 +240,21 @@
                 var alpha = 0.0;
 
                 var saida = [];
-                
+
                 for (i = 0; i < len; i++) {
                     var c = [];
                     alpha += (1.0/len);
-                    
+
                     c[0] = start[0] * alpha + (1 - alpha) * end[0];
                     c[1] = start[1] * alpha + (1 - alpha) * end[1];
                     c[2] = start[2] * alpha + (1 - alpha) * end[2];
 
                     saida.push(convertToHex (c));
-                    
+
                 }
-                
-                return saida;                
-            };  
+
+                return saida;
+            };
 
             // Color range
             // // rgb(42,252,133) #2afc85  0
@@ -244,9 +263,9 @@
             // // diff == -1fd78b or abs(1fd78b)
             // // hexString = yourNumber.toString(16);
             // var linkColors = {
-            //     "lo": ["#2afc85", 2817157], 
+            //     "lo": ["#2afc85", 2817157],
             //     "hi": ["#0b24fa", 730362],
-            //     "diff": [2086795]                
+            //     "diff": [2086795]
             // };
             // var colorBuckets = 3;
             // // var colorRange = generateColor(linkColors.lo[0], linkColors.hi[0], colorBuckets)
@@ -254,8 +273,8 @@
             // var colorRange = generateColor("#000000", "#FF0000", colorBuckets);
 
             var tree = d3.layout.tree()
-                .separation(function(a, b) { 
-                    // return ((a.parent == root) && (b.parent == root)) ? 5 : 24; 
+                .separation(function(a, b) {
+                    // return ((a.parent == root) && (b.parent == root)) ? 5 : 24;
                     // return (a.parent == b.parent ? 8 : 10);
                     return ((a.parent == root) && (b.parent == root)) ? 3 : 1;
                 })
@@ -277,9 +296,32 @@
             var jsonDataRef = null;
             var currentRoot = null;
 
+            var nodeScaleDict = null;
+            function populateNodeScaleDict(p_node){
+                if ( null !== nodeScaleDict ){
+                    delete nodeScaleDict;
+                    nodeScaleDict = {};
+                }
+
+                populateNodeScaleDictHelper(root);
+            }
+            function populateNodeScaleDictHelper(p_node){
+                
+                if ( null == p_node.children )
+                    return;
+
+                for ( var index = 0; index < p_node.children.length; index++ ){
+                    if ( undefined == nodeScaleDict[p_node.children[index].scale] ){
+                        nodeScaleDict[p_node.children[index].scale] = [];
+                    }
+                    nodeScaleDict[p_node.scale].push(p_node.children[index]);
+                    populateNodeScaleDictHelper(p_node.children[index]);
+                }
+            }
+
             // d3.json("data/d3_rt_tree_example.json", function(error, jsonData) {
             // d3.json("data/hierarchy_tree_wcolor.json", function(error, jsonData) {
-            d3.json("data/hierarchy_tree_inferno.json", function(error, jsonData) {
+            d3.json("d3_rt_tree/data/hierarchy_tree_inferno.json", function(error, jsonData) {
 
                 // Save a reference to the json data
                 jsonDataRef = jsonData;
@@ -308,7 +350,7 @@
                 currentRoot = root;
 
                 function collapse(d) {
-                    
+
                     if ( d.Children ) {
                         d._children = d.Children;
                         d._children.forEach(collapse);
@@ -324,8 +366,8 @@
             d3.select(self.frameElement).style("height", "800px");
 
             // Define the div for the tooltip
-            var div = d3.select("body").append("div")   
-                .attr("class", "simexp_tree_tooltip")               
+            var div = d3.select("body").append("div")
+                .attr("class", "simexp_tree_tooltip")
                 .style("opacity", 0);
 
             // Function to generate the html for the tool tip based on data
@@ -335,7 +377,7 @@
                     "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>scale:</b></span> " + p_data.scale + "<br>",
                     "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>roi:</b></span> " + p_data.roi + "<br>",
                     "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>name:</b></span> " + p_data.name + "<br>",
-                    "<hr style=\"text-align: center; width: 90%;\">",                    
+                    "<hr style=\"text-align: center; width: 90%;\">",
                     "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>laterality:</b></span> " + p_data.laterality + "<br>",
                     "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>overlap:</b></span> " + parseFloat(p_data.overlap).toFixed(2) + "<br>",
                     "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>size:</b></span> " + p_data.size + "<br>",
@@ -359,13 +401,8 @@
                 root.y0 = 0;
                 root.children.forEach(expand);
                 currentRoot = root;
-                update(root);             
+                update(root);
             });
-
-            // d3.selectAll(".simexp_tree_button").on("click", function(){
-
-            //     click(currentRoot);
-            // });       
 
             // Adapted from https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
             function setNodeLabelBackground(p_textNode){
@@ -382,7 +419,7 @@
                 rectangle.setAttribute("fill", nodes_labelBackgroundColor);
                 rectangle.setAttribute("fill-opacity", nodes_labelBackgroundOpacity);
                 context.insertBefore(rectangle, textElement);
-            }       
+            }
 
             function update(source) {
 
@@ -421,18 +458,18 @@
 
                         var tooltip_div = d3.select(".simexp_tree_tooltip");
                         tooltip_div.transition()
-                                   .duration(200)      
-                                   .style("opacity", .9);      
-                        tooltip_div.html(function(){ return toolTipHTML(d); }) 
-                                   .style("left", (d3.event.pageX) + "px")     
-                                   .style("top", (d3.event.pageY - 28) + "px");    
-                        })                  
-                    .on("mouseout", function(d) {  
+                                   .duration(200)
+                                   .style("opacity", .9);
+                        tooltip_div.html(function(){ return toolTipHTML(d); })
+                                   .style("left", (d3.event.pageX) + "px")
+                                   .style("top", (d3.event.pageY - 28) + "px");
+                        })
+                    .on("mouseout", function(d) {
 
-                        var tooltip_div = d3.select(".simexp_tree_tooltip");     
+                        var tooltip_div = d3.select(".simexp_tree_tooltip");
                         tooltip_div.transition()
-                                   .duration(500)      
-                                   .style("opacity", 0);   
+                                   .duration(500)
+                                   .style("opacity", 0);
                     });
 
                 nodeEnter.append("text")
@@ -457,14 +494,14 @@
                                             // return getScaleColor(d.scale);
                                             return nodes_labelScaleColor;
                                         });
-                        
+
                         d3.select(this).append("tspan")
                                        .text(function(d){ return d.label; })
                                        .attr("class", "simexp_label_text")
                                        .attr("fill", nodes_labelColor);
 
                         setNodeLabelBackground(d3.select(this));
-                    });                       
+                    });
 
                 // Transition nodes to their new position.
                 var nodeUpdate = node.transition()
@@ -510,7 +547,7 @@
                 link.enter().insert("path", "g")
                     .attr("class", "simexp_tree_link")
                     .attr("d", function(d) {
-                        
+
                         var o = {
                             x: source.x0,
                             y: source.y0
@@ -572,27 +609,72 @@
             }
 
             // ========= Expand all/Collapse all section =========
-            function expand(d){   
+            function expand(d){
                 var children = ( d.children ) ? d.children : d._children;
-                if ( d._children ) {        
+                if ( d._children ) {
                     d.children = d._children;
-                    d._children = null;       
+                    d._children = null;
                 }
                 if ( children )
                   children.forEach(expand);
             }
 
+            function expandFromRoot(p_scaleValue){
+                expandToLevel(root, p_scaleValue);
+            }
+
+            function expandToLevel(p_node, p_scaleValue){
+                var currentNode = p_node;
+                var scaleValueInt = parseInt(p_scaleValue);
+                var currentScaleInt = parseInt(root.scale.substring(1));
+
+                while ( currentScaleInt < scaleValueInt) {
+                    if ( null != root._children ){
+                        expand(currentNode);
+                        for ( var index = 0; index < currentNode.children.length; index++ ){
+                            expandToLevel(currentNode.children[index]);
+                        }
+                    }
+                }
+            }
+
+            // Development plan for expand/collapse one
+            // (1) On load up of JSON store all nodes in dict keyed by scale
+            // (2) Get desired scale value from dropdown
+            // (3) Expand/collapse nodes by running through all <= or >= in scale
+
+
             function collapse(d) {
-                
+
                 if ( d.children ) {
                     d._children = d.children;
                     d._children.forEach(collapse);
                     d.children = null;
                 }
-            } 
+            }
+
+            function collapseFromLeaves(p_scaleValue){
+                
+            }
+
+            function collapseToLevel(p_node, p_scaleValue){
+                var currentNode = p_node;
+                var scaleValueInt = parseInt(p_scaleValue);
+                var currentScaleInt = parseInt(root.scale.substring(1));
+
+                while ( currentScaleInt < scaleValueInt) {
+                    if ( null != root._children ){
+                        collapse(currentNode);
+                        for ( var index = 0; index < currentNode.children.length; index++ ){
+                            collapseToLevel(currentNode.children[index]);
+                        }
+                    }
+                }
+            }
+           
 
             function expandAll(){
-                expand(root); 
+                expand(root);
                 update(root);
             }
 
@@ -600,7 +682,7 @@
                 root.children.forEach(collapse);
                 collapse(root);
                 update(root);
-            }    
+            }
 
         </script>
     </body>

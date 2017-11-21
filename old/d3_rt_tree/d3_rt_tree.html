@@ -1,0 +1,610 @@
+<!doctype html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <style>
+
+            .simexp_tree_button {
+                background-color: black;
+                opacity: 0.5;
+                border: none;
+                color: white;
+                padding: 10px 10px;
+                text-align: center;
+                text-decoration: none;
+                font-size: 16px;
+                border-radius: 8px;
+                margin-left: 10px;
+            }
+
+            #simexp_tree_roi_selector {
+                font-size: 16px;
+                font-family: "Roboto", sans-serif;
+                color: white;
+                background-color: black;
+                opacity: 0.9;
+                border-radius: 5px;
+                border: 0px;
+                padding: 10px 10px;
+            }
+
+            .simexp_selector_label {
+                background-color: black;
+                opacity: 0.5;
+                color: white;
+                padding: 10px 10px;
+                text-align: center;
+                text-decoration: none;
+                font-size: 16px;
+                font-family: "Roboto", sans-serif;
+                border-radius: 8px;
+                margin-left: 10px;
+            }
+
+            .simexp_tree_node {
+                cursor: pointer;
+            }
+
+            .simexp_tree_node circle {
+                fill: #fff;
+                stroke: steelblue;
+                stroke-width: 1.5px;
+            }
+
+            .simexp_tree_node text {
+                font-family: "Roboto", sans-serif;
+                font-size:  14px;
+            }
+
+            .simexp_tree_link {
+                fill: none;
+                /* Original values */
+                /*stroke: #ccc;*/
+                /*stroke-width: 1.5px;*/
+                stroke-width: 2px;
+            }
+
+            .simexp_tree_tooltip {
+                position: absolute;         
+                text-align: left;         
+                /*width: 60px;                    
+                height: 28px;*/                   
+                padding: 5px;               
+                font-family: "Roboto", sans-serif;      
+                font-size: 14px;
+                background: lightsteelblue;                 
+                border-radius: 8px;         
+                pointer-events: none;
+                border-color: black;
+            }
+
+            .simexp_tree_tooltip_fieldtitle {
+                font-size: 16px;
+                font-family: "Roboto", sans-serif;
+                color: black;
+            }
+
+        </style>
+    </head>
+
+    <!--
+
+    Task List:
+
+    (1) Color scaled edges
+    (2) Tree/window scaling
+    (3) Colored text for scale label - name field colored by colordict associated with scale field
+    (4) Dropdown menu to switch between scale 7 mass regions
+    (5) Alternate implementation with whole brain
+ 
+    -->
+
+    <body>
+        <header>
+            <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select id="simexp_tree_roi_selector"></select></label>
+            <button class="simexp_tree_button" style="margin-left: 50px;" onclick="expandAll()">Expand All</button>
+            <button class="simexp_tree_button" onclick="collapseAll()">Collapse All</button>
+        </header>        
+        <div id="simexp_tree_div"></div>
+
+        <!-- D3.js -->
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+
+        <!-- Script for collapsible Reingold-Tilford tree from: https://bl.ocks.org/mbostock/4339083 -->
+        <!-- Script for hover tooltip from http://bl.ocks.org/d3noob/a22c42db65eb00d4e369 -->
+        <script>
+
+            // Color parameters
+            var backgroundColor = "slategrey";
+            var nodes_collapsedColor = "lightsteelblue";
+            var nodes_expandedColor = "#C0C0C0";
+            var nodes_labelColor = "white";
+            var nodes_labelBackgroundColor = "black";
+            var nodes_labelBackgroundOpacity = 0.3;
+            var nodes_labelScaleColor = "lightblue";
+
+
+            function getScaleColor(p_scale){
+                
+                var scaleColor = "black";
+                switch ( p_scale ){
+
+                    case "s7":
+                        scaleColor = "red";
+                        break;
+                    case "s12":
+                        scaleColor = "green";
+                        break;
+                    case "s36":
+                        scaleColor = "blue";
+                        break;
+                    case "s64":
+                        scaleColor = "orange";
+                        break;
+                    case "s122":
+                        scaleColor = "purple";
+                        break;
+                    case "sROI":
+                        scaleColor = "cyan";
+                        break;
+                }
+
+                return scaleColor;
+            };
+
+            // var orig_width = 960;
+            // var orig_height = 800;
+            var full_width = 2880;
+            // var full_height = 960;
+            var full_height = 1440;
+            var margin = {
+                    top: 20,
+                    right: 120,
+                    bottom: 20,
+                    // left: 120
+                    left: 240
+                },
+                width = full_width - margin.right - margin.left,
+                height = full_height - margin.top - margin.bottom;
+
+            var i = 0,
+                duration = 750,
+                root;                
+
+            // Color blending method adapted from:
+            // https://stackoverflow.com/questions/3080421/javascript-color-gradient
+            function hex(c) {
+
+                var s = "0123456789abcdef";
+                var i = parseInt (c);
+                if ( i == 0 || isNaN(c) ){
+                    return "00";
+                }
+                i = Math.round(Math.min (Math.max (0, i), 255));
+
+                return s.charAt ((i - i % 16) / 16) + s.charAt (i % 16);
+            }            
+            /* Remove '#' in color hex string */
+            function trimHex(s) {
+
+                return ( s.charAt(0) == "#" ) ? s.substring(1, 7) : s 
+            };
+            /* Convert an RGB triplet to a hex string */
+            function convertToHex (rgb) {
+
+                return hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);
+            }            
+            /* Convert a hex string to an RGB triplet */
+            function convertToRGB (hex) {
+                
+                var color = [];
+                color[0] = parseInt ((trimHex(hex)).substring (0, 2), 16);
+                color[1] = parseInt ((trimHex(hex)).substring (2, 4), 16);
+                color[2] = parseInt ((trimHex(hex)).substring (4, 6), 16);
+                
+                return color;
+            };
+            function generateColor(colorStart,colorEnd,colorCount) {
+
+                // The beginning of your gradient
+                var start = convertToRGB (colorStart);    
+
+                // The end of your gradient
+                var end   = convertToRGB (colorEnd);    
+
+                // The number of colors to compute
+                var len = colorCount;
+
+                //Alpha blending amount
+                var alpha = 0.0;
+
+                var saida = [];
+                
+                for (i = 0; i < len; i++) {
+                    var c = [];
+                    alpha += (1.0/len);
+                    
+                    c[0] = start[0] * alpha + (1 - alpha) * end[0];
+                    c[1] = start[1] * alpha + (1 - alpha) * end[1];
+                    c[2] = start[2] * alpha + (1 - alpha) * end[2];
+
+                    saida.push(convertToHex (c));
+                    
+                }
+                
+                return saida;                
+            };  
+
+            // Color range
+            // // rgb(42,252,133) #2afc85  0
+            // // to
+            // // rgb(11,36,250)  #0b24fa 1
+            // // diff == -1fd78b or abs(1fd78b)
+            // // hexString = yourNumber.toString(16);
+            // var linkColors = {
+            //     "lo": ["#2afc85", 2817157], 
+            //     "hi": ["#0b24fa", 730362],
+            //     "diff": [2086795]                
+            // };
+            // var colorBuckets = 3;
+            // // var colorRange = generateColor(linkColors.lo[0], linkColors.hi[0], colorBuckets)
+            // // var colorRange = generateColor("#2DF8FE", "#FB29FC", colorBuckets);
+            // var colorRange = generateColor("#000000", "#FF0000", colorBuckets);
+
+            var tree = d3.layout.tree()
+                .separation(function(a, b) { 
+                    // return ((a.parent == root) && (b.parent == root)) ? 5 : 24; 
+                    // return (a.parent == b.parent ? 8 : 10);
+                    return ((a.parent == root) && (b.parent == root)) ? 3 : 1;
+                })
+                .size([height, width]);
+
+            var diagonal = d3.svg.diagonal()
+                .projection(function(d) {
+                    return [d.y, d.x];
+                });
+
+            var svg = d3.select("#simexp_tree_div").append("svg")
+                .attr("id", "simexp_svg")
+                .attr("width", width + margin.right + margin.left)
+                .attr("height", height + margin.top + margin.bottom)
+                .attr("overflow", "scroll")
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var jsonDataRef = null;
+            var currentRoot = null;
+
+            // d3.json("data/d3_rt_tree_example.json", function(error, jsonData) {
+            // d3.json("data/hierarchy_tree_wcolor.json", function(error, jsonData) {
+            d3.json("data/hierarchy_tree_inferno.json", function(error, jsonData) {
+
+                // Save a reference to the json data
+                jsonDataRef = jsonData;
+
+                if ( error ) {
+                    throw error;
+                }
+
+                // Populate a select box for the different ROIs
+                var selector = d3.select("#simexp_tree_roi_selector");
+                for ( var index = 0; index < jsonData.length; index++ ){
+                    if ( 0 == index ) {
+                        selector.append("option").attr("value", jsonData[index].roi)
+                                                 .attr("selected", "selected")
+                                                 .attr("class", "simexp_selector_option")
+                                                 .text(jsonData[index].name);
+                    } else {
+                        selector.append("option").attr("value", jsonData[index].roi)
+                                                 .attr("class", "simexp_selector_option")
+                                                 .text(jsonData[index].name);
+                    }
+                }
+
+                var initialTreeIndex = 0;
+                root = jsonData[initialTreeIndex];
+                root.x0 = height / 2;
+                root.y0 = 0;
+                currentRoot = root;
+
+                function collapse(d) {
+                    
+                    if ( d.Children ) {
+                        d._children = d.Children;
+                        d._children.forEach(collapse);
+                        d.Children = null;
+                        d.children = null;
+                    }
+                }
+
+                root.children.forEach(collapse);
+                update(root);
+            });
+
+            d3.select(self.frameElement).style("height", "800px");
+
+            // Define the div for the tooltip
+            var div = d3.select("body").append("div")   
+                .attr("class", "simexp_tree_tooltip")               
+                .style("opacity", 0);
+
+            // Function to generate the html for the tool tip based on data
+            function toolTipHTML(p_data) {
+
+                var fieldsHTML = [
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>scale:</b></span> " + p_data.scale + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>roi:</b></span> " + p_data.roi + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>name:</b></span> " + p_data.name + "<br>",
+                    "<hr style=\"text-align: center; width: 90%;\">",                    
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>laterality:</b></span> " + p_data.laterality + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>overlap:</b></span> " + parseFloat(p_data.overlap).toFixed(2) + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>size:</b></span> " + p_data.size + "<br>",
+                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>symmetry:</b></span> " + p_data.symmetry + "<br>"
+                ];
+                return fieldsHTML.join("");
+            };
+
+            // Set background color;
+            d3.select("body").style("background-color", backgroundColor);
+            d3.select("svg").style("background-color", backgroundColor);
+
+            // Set selector functionality to switch trees
+            d3.select("#simexp_tree_roi_selector").on("change", function() {
+                var sect = document.getElementById("simexp_tree_roi_selector");
+                var roi = sect.options[sect.selectedIndex].value;
+
+                // Switch ROI trees
+                root = jsonDataRef[parseInt(roi) - 1];
+                root.x0 = height / 2;
+                root.y0 = 0;
+                root.children.forEach(expand);
+                currentRoot = root;
+                update(root);             
+            });
+
+            // d3.selectAll(".simexp_tree_button").on("click", function(){
+
+            //     click(currentRoot);
+            // });       
+
+            // Adapted from https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
+            function setNodeLabelBackground(p_textNode){
+
+                var context = p_textNode.node().parentNode,
+                textElement = p_textNode.node(),
+                textBoundingBox = textElement.getBBox();
+
+                var rectangle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rectangle.setAttribute("x", textBoundingBox.x - 3);
+                rectangle.setAttribute("y", textBoundingBox.y - 1);
+                rectangle.setAttribute("width", textBoundingBox.width + 6);
+                rectangle.setAttribute("height", textBoundingBox.height + 2);
+                rectangle.setAttribute("fill", nodes_labelBackgroundColor);
+                rectangle.setAttribute("fill-opacity", nodes_labelBackgroundOpacity);
+                context.insertBefore(rectangle, textElement);
+            }       
+
+            function update(source) {
+
+                // Compute the new tree layout.
+                var nodes = tree.nodes(root).reverse(),
+                    links = tree.links(nodes);
+
+                // Normalize for fixed-depth.
+                nodes.forEach(function(d) {
+                    d.y = d.depth * 180;
+                });
+
+                // Update the nodes…
+                var node = svg.selectAll("g.simexp_tree_node")
+                    .data(nodes, function(d) {
+                        return d.id || (d.id = ++i);
+                    });
+
+                // Enter any new nodes at the parent's previous position.
+                var nodeEnter = node.enter().append("g")
+                    .attr("class", "simexp_tree_node")
+                    .attr("transform", function(d) {
+                        return "translate(" + source.y0 + "," + source.x0 + ")";
+                    })
+                    .on("click", click);
+
+                nodeEnter.append("circle")
+                    .attr("r", 1e-6)
+                    .style("fill", function(d) {
+                        // return d._children ? "lightsteelblue" : "#fff";
+                        // return d._children ? "lightsteelblue" : "#000";
+                        // return d._children ? "lightsteelblue" : "#C0C0C0";
+                        return d._children ? nodes_collapsedColor : nodes_expandedColor;
+                    })
+                    .on("mouseover", function(d) {
+
+                        var tooltip_div = d3.select(".simexp_tree_tooltip");
+                        tooltip_div.transition()
+                                   .duration(200)      
+                                   .style("opacity", .9);      
+                        tooltip_div.html(function(){ return toolTipHTML(d); }) 
+                                   .style("left", (d3.event.pageX) + "px")     
+                                   .style("top", (d3.event.pageY - 28) + "px");    
+                        })                  
+                    .on("mouseout", function(d) {  
+
+                        var tooltip_div = d3.select(".simexp_tree_tooltip");     
+                        tooltip_div.transition()
+                                   .duration(500)      
+                                   .style("opacity", 0);   
+                    });
+
+                nodeEnter.append("text")
+                    .attr("x", function(d) {
+                        return d.children || d._children ? -10 : 10;
+                    })
+                    .attr("dy", ".35em")
+                    .attr("text-anchor", function(d) {
+                        return d.children || d._children ? "end" : "start";
+                    })
+                    // .text(function(d) {
+                    //     // return d.name;
+                    //     return d.scale.substring(1) + "_" + d.label;
+                    // })
+                    .style("fill-opacity", 1e-6)
+                    .each(function(){
+
+                        d3.select(this).append("tspan")
+                                       .text(function(d){ return d.scale + "_"; })
+                                       .attr("class", "simexp_label_text")
+                                       .attr("fill", function(d){
+                                            // return getScaleColor(d.scale);
+                                            return nodes_labelScaleColor;
+                                        });
+                        
+                        d3.select(this).append("tspan")
+                                       .text(function(d){ return d.label; })
+                                       .attr("class", "simexp_label_text")
+                                       .attr("fill", nodes_labelColor);
+
+                        setNodeLabelBackground(d3.select(this));
+                    });                       
+
+                // Transition nodes to their new position.
+                var nodeUpdate = node.transition()
+                    .duration(duration)
+                    .attr("transform", function(d) {
+                        return "translate(" + d.y + "," + d.x + ")";
+                    });
+
+                nodeUpdate.select("circle")
+                    .attr("r", 4.5)
+                    .style("fill", function(d) {
+                        // return d._children ? "lightsteelblue" : "#fff";
+                        // return d._children ? "lightsteelblue" : "#000";
+                        // return d._children ? "lightsteelblue" : "#C0C0C0";
+                        return d._children ? nodes_collapsedColor : nodes_expandedColor;
+                    });
+
+                nodeUpdate.select("text")
+                    .style("fill-opacity", 1)
+                    .style("fill", nodes_labelColor);
+
+                // Transition exiting nodes to the parent's new position.
+                var nodeExit = node.exit().transition()
+                    .duration(duration)
+                    .attr("transform", function(d) {
+                        return "translate(" + source.y + "," + source.x + ")";
+                    })
+                    .remove();
+
+                nodeExit.select("circle")
+                    .attr("r", 1e-6);
+
+                nodeExit.select("text")
+                    .style("fill-opacity", 1e-6);
+
+                // Update the links…
+                var link = svg.selectAll("path.simexp_tree_link")
+                    .data(links, function(d) {
+                        return d.target.id;
+                    });
+
+                // Enter any new links at the parent's previous position.
+                link.enter().insert("path", "g")
+                    .attr("class", "simexp_tree_link")
+                    .attr("d", function(d) {
+                        
+                        var o = {
+                            x: source.x0,
+                            y: source.y0
+                        };
+
+                        return diagonal({
+                            source: o,
+                            target: o
+                        });
+                    })
+                    .attr("stroke", function(d){
+                        return d.target.color;
+                    });
+
+                // 730362 + (0.9761786600496278 * 2086795)
+
+                // Transition links to their new position.
+                link.transition()
+                    .duration(duration)
+                    .attr("d", diagonal);
+
+                // Transition exiting nodes to the parent's new position.
+                link.exit().transition()
+                    .duration(duration)
+                    .attr("d", function(d) {
+
+                        var o = {
+                            x: source.x,
+                            y: source.y
+                        };
+
+                        return diagonal({
+                            source: o,
+                            target: o
+                        });
+                    })
+                    .remove();
+
+                // Stash the old positions for transition.
+                nodes.forEach(function(d) {
+
+                    d.x0 = d.x;
+                    d.y0 = d.y;
+                });
+            }
+
+            // Toggle children on click.
+            function click(d) {
+                if ( d.children ) {
+
+                    d._children = d.children;
+                    d.children = null;
+                } else {
+
+                    d.children = d._children;
+                    d._children = null;
+                }
+                update(d);
+            }
+
+            // ========= Expand all/Collapse all section =========
+            function expand(d){   
+                var children = ( d.children ) ? d.children : d._children;
+                if ( d._children ) {        
+                    d.children = d._children;
+                    d._children = null;       
+                }
+                if ( children )
+                  children.forEach(expand);
+            }
+
+            function collapse(d) {
+                
+                if ( d.children ) {
+                    d._children = d.children;
+                    d._children.forEach(collapse);
+                    d.children = null;
+                }
+            } 
+
+            function expandAll(){
+                expand(root); 
+                update(root);
+            }
+
+            function collapseAll(){
+                root.children.forEach(collapse);
+                collapse(root);
+                update(root);
+            }    
+
+        </script>
+    </body>
+
+</html>
