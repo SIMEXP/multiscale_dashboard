@@ -191,10 +191,10 @@
 
             var svg = d3.select("#simexp_tree_div").append("svg")
                 .attr("id", "simexp_svg")
-                //.attr("width", width + margin.right + margin.left)
-                //.attr("height", height + margin.top + margin.bottom)
-                .attr("width", width)
-                .attr("height", height)
+                .attr("width", width + margin.right + margin.left)
+                .attr("height", height + margin.top + margin.bottom)
+                //.attr("width", width)
+                //.attr("height", height)
                 .attr("overflow", "scroll")
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
