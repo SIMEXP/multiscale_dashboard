@@ -85,6 +85,21 @@
         <!-- Script for hover tooltip from http://bl.ocks.org/d3noob/a22c42db65eb00d4e369 -->
         <script>
 
+            <!--Read page parameters and update accordingly-->
+            function getParameterByName(name, url) {
+              if (!url) url = window.location.href;
+              name = name.replace(/[\[\]]/g, "\\$&");
+              var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                  results = regex.exec(url);
+              if (!results) return null;
+              if (!results[2]) return '';
+              return decodeURIComponent(results[2].replace(/\+/g, " "));
+            }
+            var tour = getParameterByName('tour');
+            if (tour) {
+              introJs().start();
+            };
+
             <!--Generate a viewer for parent parcel--!>
             var brainParent = brainsprite({
               canvas: "parcelParent",
