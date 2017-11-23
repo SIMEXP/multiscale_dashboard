@@ -36,15 +36,15 @@
                         <img id="template" class="hidden" src="./images/icbm_2009c_brain.png">
                         <img id="parent" class="hidden" src="./images/resolution_s12_roi_12.png">
                         <img id="children" class="hidden" src="./images/resolution_s12_roi_12_children.png">
-                        <img id="target" class="hidden" src="./images/resolution_s36_roi_1.png">                      
+                        <img id="target" class="hidden" src="./images/resolution_s20_roi_4.png">
                     </div>
                 </div>
-                
+
                 <!-- Children -->
                 <div class="col-md-4 simexp_bootstrap_viewer_column">
                     <div class="simexp_viewer_div">
                         <span class="simexp_viewer_label" id="childrenText"></span>
-                        <canvas id="parcelChildren" class="simexp_viewer_canvas">    
+                        <canvas id="parcelChildren" class="simexp_viewer_canvas">
                     </div>
                 </div>
 
@@ -53,7 +53,7 @@
                     <div class="simexp_viewer_div">
                         <span class="simexp_viewer_label" id="targetText"></span>
                         <canvas id="parcelTarget" class="simexp_viewer_canvas">
-                    </div>                        
+                    </div>
                 </div>
             </div>
 
@@ -159,7 +159,7 @@
             var nodes_labelColor = "white";
             var nodes_labelBackgroundColor = "black";
             var nodes_labelBackgroundOpacity = 0.3;
-            var nodes_labelScaleColor = "lightblue";            
+            var nodes_labelScaleColor = "lightblue";
             var nodes_radius = 7;
 
             var full_width = 1500;
@@ -203,15 +203,16 @@
             var scaleTextDict = {
                     // "7": 7,
                     "12": 12,
+                    "20": 20,
                     "36": 36,
                     "64": 64,
                     "122": 122,
                     "roi": 164 // Fake number just needs to be higher than 164
-            };                
+            };
 
             // Trees start out at scale level 12 and go up/down with the Expand/Collapse button
             // var treeScaleLevel = 12;
-            var treeScaleLevel = scaleTextDict["roi"];               
+            var treeScaleLevel = scaleTextDict["roi"];
 
             // Keep track of all tree nodes in a list of lists for easy expand/collapse
             var nodeScaleDict = null;
@@ -224,7 +225,7 @@
                 populateNodeScaleDictHelper(root);
             }
             function populateNodeScaleDictHelper(p_node){
-                
+
                 var children = ( null == p_node.children ) ? p_node._children : p_node.children;
                 if ( null == children ){
                     return;
@@ -239,7 +240,7 @@
                     nodeScaleDict[scaleValueStr].push(children[index]);
                     populateNodeScaleDictHelper(children[index]);
                 }
-            }            
+            }
 
             // Load the tree JSON
             var jsonDataRef = null;
@@ -270,7 +271,7 @@
                 for ( var index = 0; index < Object.keys(scaleTextDict).length; index++ ) {
                     // if ( 0 == index ) {
                     if ( Object.keys(scaleTextDict).length - 1 == index ){
-                        
+
                         // selector.append("option").attr("value", scaleTextDict[Object.keys(scaleTextDict)[index]])
                         selector.append("option").attr("value", Object.keys(scaleTextDict)[index])
                                                  .attr("selected", "selected")
@@ -280,7 +281,7 @@
                         selector.append("option").attr("value", Object.keys(scaleTextDict)[index])
                                                  .text(Object.keys(scaleTextDict)[index]);
                     }
-                }               
+                }
 
                 var initialTreeIndex = 0;
                 root = jsonData[initialTreeIndex];
@@ -311,7 +312,7 @@
                   name:  base.name,
                   scale: base.scale,
                   com:   base.com
-                };                
+                };
                 $("#parentText").text("Parent (" + d.parent.scale + "): " + d.parent.name);
                 $("#childrenText").text("All children ("+ d.scale + ") of " + d.parent.name);
                 $("#targetText").text("Parcel (" + d.scale + "): " + d.name);
@@ -419,7 +420,7 @@
                     var previousButtonWidth = expandCollapseButton.style("width");
                     expandCollapseButton.text("Collapse")
                                         .style("width", previousButtonWidth);
-                }                
+                }
             }
 
             // References last clicked node
@@ -448,7 +449,7 @@
                 var nodeEnter = node.enter().append("g")
                     .attr("class", "simexp_tree_node")
                     .attr("transform", function(d) {
-                        return "translate(" + source.y0 + "," + source.x0 + ")";                        
+                        return "translate(" + source.y0 + "," + source.x0 + ")";
                     })
                     .on("click", function(d){
 
@@ -460,7 +461,7 @@
                                 var parentData = d3.select(this.parentNode).datum();
                                 if ( parentData && parentData._children )
                                     return nodes_collapsedColor;
-                                else                                
+                                else
                                     return d3.select(this).style("fill", nodes_expandedColor);
                             });
                         }
@@ -480,7 +481,7 @@
 
                         if ( d.name == lastClickedNodeName && d.scale == lastClickedScale ){
                             return nodes_clickedColor;
-                        } 
+                        }
 
                         return d._children ? nodes_collapsedColor : nodes_expandedColor;
                     })
@@ -541,13 +542,13 @@
                 nodeUpdate.select("circle")
                     .attr("r", nodes_radius)
                     .style("fill", function(d) {
-                        
+
                         if ( lastClickedNode && this == lastClickedNode.childNodes[0] ){
                             return nodes_clickedColor;
                         } else if ( d.name == lastClickedNodeName && d.scale == lastClickedScale ){
                             return nodes_clickedColor;
-                        } 
-                        
+                        }
+
                         return d._children ? nodes_collapsedColor : nodes_expandedColor;
                     });
 
@@ -683,7 +684,7 @@
             }
 
             function chooseExpandOrCollapseToScaleLevel(){
-                
+
                 var scaleSelector = document.getElementById("simexp_tree_scale_selector");
                 var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
                 if ( currentSelectorScale > treeScaleLevel ){
@@ -699,7 +700,7 @@
                 var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
 
                 // Expand nodes with scales below the one in the scale dropdown
-                var scaleOrder = ["12", "36", "64", "122", "roi" ];
+                var scaleOrder = ["12", "20", "36", "64", "122", "roi" ];
                 var nodesExpanded = [];
                 for ( var index = 0; index < scaleOrder.length; index++ ){
                     if ( scaleTextDict[scaleOrder[index]] < currentSelectorScale ){
@@ -725,11 +726,11 @@
 
             function findParent(p_node){
 
-                var scaleOrder = ["12", "36", "64", "122", "roi" ];
+                var scaleOrder = ["12", "20", "36", "64", "122", "roi" ];
 
                 for ( var index = 0; index < scaleOrder.length; index++ ){
                     for ( var index2 = 0; index2 < nodeScaleDict[scaleOrder[index]].length; index2++ ){
-                        if ( nodeScaleDict[scaleOrder[index]][index2].children && 
+                        if ( nodeScaleDict[scaleOrder[index]][index2].children &&
                              nodeScaleDict[scaleOrder[index]][index2].children.includes(p_node) ){
                             return nodeScaleDict[scaleOrder[index]][index2];
                         }
@@ -745,7 +746,7 @@
                 var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
 
                 // Collapse nodes with scales above the one in the scale dropdown
-                var scaleOrder = ["12", "36", "64", "122", "roi" ];
+                var scaleOrder = ["12", "20", "36", "64", "122", "roi" ];
                 var nodesCollapsed = [];
                 for ( var index = scaleOrder.length - 1; index >= 0; index-- ){
                     if ( scaleTextDict[scaleOrder[index]] >= currentSelectorScale ){
@@ -759,12 +760,12 @@
                 // Update tree with branch collapses made
                 for ( var index = 0; index < nodesCollapsed.length; index++ ){
                     update(nodesCollapsed[index]);
-                } 
+                }
 
                 // Save the new tree level
                 treeScaleLevel = currentSelectorScale;
-            }            
-          
+            }
+
             function expandAll(){
 
                 expand(root);
