@@ -16,8 +16,9 @@
             <div class="row simexp_bootstrap_row" >
                 <header>
                     <div style="display: inline-block; float: left;">
-                        <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select id="simexp_tree_roi_selector"></select></label>
+                        <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select data-step="1" data-intro="This is a tooltip!" id="simexp_tree_roi_selector"></select></label>
                     </div>
+                    <a class="btn btn-large btn-success" href="javascript:void(0);" onclick="javascript:introJs().start();">Show me how</a>
                     <div style="display: inline-block; float: right;">
                         <!-- <button class="simexp_tree_button" id="expandCollapseButton" style="margin-left: 50px;" onclick="chooseExpandOrCollapseToScaleLevel()">&nbsp;Expand&nbsp;</button> -->
                         <label class="simexp_selector_label">Scale:&nbsp;&nbsp;<select id="simexp_tree_scale_selector" onchange="chooseExpandOrCollapseToScaleLevel()"></select></label>
