@@ -6,6 +6,7 @@
         <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         <link rel="stylesheet" href="./styles/multiscale_dashboard.css"/>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link href="./scripts/introjs.min.css" rel="stylesheet">
     </head>
 
     <body>
@@ -15,13 +16,15 @@
             <!-- Tree controls -->
             <div class="row simexp_bootstrap_row" >
                 <header>
-                    <div style="display: inline-block; float: left;">
-                        <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select data-step="1" data-intro="This is a tooltip!" id="simexp_tree_roi_selector"></select></label>
+                    <div style="display: inline-block; float: left">
+                        <label class="simexp_selector_label">Decomposition of:&nbsp;&nbsp;<select data-step="1" data-intro="Select one of the large-scale intrinsic connectivity network here" id="simexp_tree_roi_selector"></select></label>
                     </div>
-                    <a class="btn btn-large btn-success" href="javascript:void(0);" onclick="javascript:introJs().start();">Show me how</a>
-                    <div style="display: inline-block; float: right;">
+                    <div style="display: inline-block; float: center">
+                      <a class="simexp_selector_label" href="javascript:void(0);" onclick="javascript:introJs().start();">Take a tour!</a>
+                    </div>
+                    <div style="display: inline-block; float: right">
                         <!-- <button class="simexp_tree_button" id="expandCollapseButton" style="margin-left: 50px;" onclick="chooseExpandOrCollapseToScaleLevel()">&nbsp;Expand&nbsp;</button> -->
-                        <label class="simexp_selector_label">Scale:&nbsp;&nbsp;<select id="simexp_tree_scale_selector" onchange="chooseExpandOrCollapseToScaleLevel()"></select></label>
+                        <label class="simexp_selector_label">Scale:&nbsp;&nbsp;<select data-step="6" data-intro="You can cut the tree at any resolution, to simplify the exploration. By default the highest available resolution (sroi) is selected." id="simexp_tree_scale_selector" onchange="chooseExpandOrCollapseToScaleLevel()"></select></label>
                     </div>
                 </header>
             </div>
@@ -33,7 +36,7 @@
                 <div class="col-md-4 simexp_bootstrap_viewer_column">
                     <div class="simexp_viewer_div">
                         <span class="simexp_viewer_label" id="parentText"></span>
-                        <canvas id="parcelParent" class="simexp_viewer_canvas">
+                        <canvas data-step="4" data-intro="Here you see the parent of the selected parcel, at the resolution just below the one you select." id="parcelParent" class="simexp_viewer_canvas">
                         <img id="template" class="hidden" src="./images/icbm_2009c_brain.png">
                         <img id="parent" class="hidden" src="./images/resolution_s12_roi_12.png">
                         <img id="children" class="hidden" src="./images/resolution_s12_roi_12_children.png">
@@ -45,7 +48,7 @@
                 <div class="col-md-4 simexp_bootstrap_viewer_column">
                     <div class="simexp_viewer_div">
                         <span class="simexp_viewer_label" id="childrenText"></span>
-                        <canvas id="parcelChildren" class="simexp_viewer_canvas">
+                        <canvas data-step="5" data-intro="Those are all the parcels who share the same parent at selected resolution." id="parcelChildren" class="simexp_viewer_canvas">
                     </div>
                 </div>
 
@@ -53,7 +56,7 @@
                 <div class="col-md-4 simexp_bootstrap_viewer_column">
                     <div class="simexp_viewer_div">
                         <span class="simexp_viewer_label" id="targetText"></span>
-                        <canvas id="parcelTarget" class="simexp_viewer_canvas">
+                        <canvas data-step="3" data-intro="This viewer shows the parcel at pre-selected coordinates. Click on it to navigate through the slices." id="parcelTarget" class="simexp_viewer_canvas">
                     </div>
                 </div>
             </div>
@@ -61,7 +64,7 @@
             <!-- Tree -->
             <div class="row simexp_bootstrap_row">
                 <div class="col-md-12">
-                <div id="simexp_tree_div"></div>
+                <div data-step="2" data-intro="This tree represents the split of brain parcels across resolutions. Hover on a node for statistics. Click on a node to trigger the brain viewers." id="simexp_tree_div"></div>
             </div>
         </div>
 
@@ -75,7 +78,7 @@
 
         <!-- Brainsprite -->
         <script type="text/javascript" src="./scripts/brainsprite.js"></script>
-
+        <script type="text/javascript" src="./scripts/intro.min.js"></script>
         <!-- Script for collapsible Reingold-Tilford tree adapted from: https://bl.ocks.org/mbostock/4339083 -->
         <!-- Script for hover tooltip from http://bl.ocks.org/d3noob/a22c42db65eb00d4e369 -->
         <script>
@@ -302,7 +305,7 @@
                 update(root);
 
                 // Set initial label text for Brainsprite viewers
-                var base = root.children[0];
+                var base = root.children[0]._children[0];
                 var d = {
                   parent:  {
                     name:  base.parentName,
