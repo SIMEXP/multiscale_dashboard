@@ -13,7 +13,7 @@
 
     <body>
 
-        <div class="container-fluid" style="padding: 0px;">
+        <div class="container-fluid" id="simexp_tree_container" style="padding: 0px;">
 
             <!-- Tree controls -->
             <div class="row simexp_bootstrap_row" >
@@ -23,7 +23,7 @@
                     </div>
                     <div style="display: inline-block; float: center;">
                         <label class="simexp_selector_label" style="margin-left: 20px !important;">
-                            <a href="javascript:void(0);" style="color: cyan;" onclick="javascript:introJs().start();">Take a tour!</a>
+                            <a href="javascript:void(0);" style="color: cyan;" onclick="javascript:startIntroJS();">Take a tour!</a>
                         </label>
                     </div>
                     <div style="display: inline-block; float: right;">
@@ -38,7 +38,7 @@
 
                 <!-- Parent -->
                 <div class="col-md-4 simexp_bootstrap_viewer_column">
-                    <div class="simexp_viewer_div">
+                    <div class="simexp_viewer_div" id="brainsprite_parent_container">
                         <span class="simexp_viewer_label" id="parentText"></span>
                         <canvas data-step="4" data-intro="Here you see the parent of the selected parcel. The parent is the parcel at the next lower resolution that the selected parcel has the highest overlap with." id="parcelParent" class="simexp_viewer_canvas">
                         <img id="template" class="hidden" src="./images/icbm_2009c_brain.png">
@@ -68,8 +68,10 @@
             <!-- Tree -->
             <div class="row simexp_bootstrap_row">
                 <div class="col-md-12">
-                <div data-step="2" data-intro="This tree represents the decomposition of brain parcels across resolutions. Hover on a node for details. Click on a node to view the parcel in the interactive viewers." id="simexp_tree_div"></div>
+                    <div id="simexp_tree_div" style="width: 1500px;" data-step="2" data-intro="This tree represents the decomposition of brain parcels across resolutions. Hover on a node for details. Click on a node to view the parcel in the interactive viewers." data-position='bottom'></div>
+                </div>
             </div>
+
         </div>
 
         <!-- D3.js -->
@@ -85,231 +87,659 @@
         <script type="text/javascript" src="./scripts/intro.min.js"></script>
         <!-- Script for collapsible Reingold-Tilford tree adapted from: https://bl.ocks.org/mbostock/4339083 -->
         <!-- Script for hover tooltip from http://bl.ocks.org/d3noob/a22c42db65eb00d4e369 -->
+
+        <!-- imagesLoaded package (https://imagesloaded.desandro.com/) -->
+        <script type="text/javascript" src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+
+        <!-- jQuery watch - watches for property changes -->
+        <script type="text/javascript" src="scripts/jquery-watch.js"></script>
+        
         <script>
 
-            <!--Read page parameters and update accordingly-->
-            function getParameterByName(name, url) {
-              if (!url) url = window.location.href;
-              name = name.replace(/[\[\]]/g, "\\$&");
-              var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                  results = regex.exec(url);
-              if (!results) return null;
-              if (!results[2]) return '';
-              return decodeURIComponent(results[2].replace(/\+/g, " "));
+            var stepTwoPassed = false;
+            
+            function startIntroJS(){
+                introJs().onafterchange(function(targetElement) {
+                    switch (targetElement.getAttribute("data-step"))
+                    {
+                        case "2":
+
+                            stepTwoPassed = true;
+
+                            $(".introjs-tooltip:first").bind("DOMSubtreeModified", function(e) {
+                                if ( stepTwoPassed && "auto" != $(".introjs-tooltip:first").css("bottom")){
+                                    stepTwoPassed = false;
+                                    $(".introjs-tooltip:first").css({
+                                        "bottom": (parseInt($(".introjs-tooltip:first").css("bottom")) - 200).toString() + "px" });
+                                }
+                            });
+
+                            break;
+                    }
+                }).start();
             }
-            var tour = getParameterByName('tour');
-            if (tour) {
-              introJs().start();
-            };
 
-            <!--Generate a viewer for parent parcel--!>
-            var brainParent = brainsprite({
-              canvas: "parcelParent",
-              sprite: "template",
-              nbSlice: { 'Y':229 , 'Z':193 },
-              colorBackground: "#000000",
-              colorFont: "#FFFFFF",
-              flagCoordinates: true,
-              origin: {X: 96.000, Y:132.000, Z:78.000},
-              voxelSize: 1.000,
-              overlay: {
-                sprite: "parent",
-                smooth: true,
-                nbSlice: { 'Y':229 , 'Z':193 },
-                opacity: 0.5
-              },
-              onclick: function(e) {
-                brainChildren.numSlice = brainParent.numSlice;
-                brainTarget.numSlice = brainParent.numSlice;
-                brainChildren.drawAll();
-                brainTarget.drawAll();
-              },
-            });
+            // Wait till all Brainsprite pngs are loaded before proceeding
+            $("#brainsprite_parent_container").imagesLoaded(function(){                                   
 
-            <!--Generate a viewer for children parcels--!>
-            var brainChildren = brainsprite({
-              canvas: "parcelChildren",
-              sprite: "template",
-              nbSlice: { 'Y':229 , 'Z':193 },
-              colorBackground: "#000000",
-              colorFont: "#FFFFFF",
-              flagCoordinates: true,
-              origin: {X: 96.000, Y:132.000, Z:78.000},
-              voxelSize: 1.000,
-              overlay: {
-                sprite: "children",
-                smooth: true,
-                nbSlice: { 'Y':229 , 'Z':193 },
-                opacity: 0.5
-              },
-              onclick: function(e) {
-                brainParent.numSlice = brainChildren.numSlice;
-                brainTarget.numSlice = brainChildren.numSlice;
-                brainParent.drawAll();
-                brainTarget.drawAll();
-              },
-            });
+                <!--Read page parameters and update accordingly-->
+                function getParameterByName(name, url) {
+                  if (!url) url = window.location.href;
+                  name = name.replace(/[\[\]]/g, "\\$&");
+                  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                      results = regex.exec(url);
+                  if (!results) return null;
+                  if (!results[2]) return '';
+                  return decodeURIComponent(results[2].replace(/\+/g, " "));
+                }
+                var tour = getParameterByName('tour');
+                if (tour) {
+                  introJs().start();
+                };
 
-            <!--Generate a viewer for target parcel--!>
-            var brainTarget = brainsprite({
-              canvas: "parcelTarget",
-              sprite: "template",
-              nbSlice: { 'Y':229 , 'Z':193 },
-              colorBackground: "#000000",
-              colorFont: "#FFFFFF",
-              flagCoordinates: true,
-              origin: {X: 96.000, Y:132.000, Z:78.000},
-              voxelSize: 1.000,
-              overlay: {
-                sprite: "target",
-                smooth: true,
-                nbSlice: { 'Y':229 , 'Z':193 },
-                opacity: 0.5
-              },
-              onclick: function(e) {
-                brainParent.numSlice = brainTarget.numSlice;
-                brainChildren.numSlice = brainTarget.numSlice;
-                brainParent.drawAll();
-                brainChildren.drawAll();
-              },
-            });
-
-            // Color parameters
-            var backgroundColor = "slategrey";
-            var nodes_clickedColor = "#FF4136";
-            var nodes_collapsedColor = "lightsteelblue";
-            var nodes_expandedColor = "#C0C0C0";
-            var nodes_labelColor = "white";
-            var nodes_labelBackgroundColor = "black";
-            var nodes_labelBackgroundOpacity = 0.3;
-            var nodes_labelScaleColor = "lightblue";
-            var nodes_radius = 7;
-
-            var full_width = 1500;
-            var full_height = 800;
-            var margin = {
-                    top: 20,
-                    right: 120,
-                    bottom: 20,
-                    left: 120
-                },
-                width = full_width - margin.right - margin.left,
-                height = full_height - margin.top - margin.bottom;
-
-            var i = 0,
-                duration = 750,
-                root;
-
-            var tree = d3.layout.tree()
-                .separation(function(a, b) {
-                    // return (a.parent == b.parent ? 8 : 10);
-                    return ((a.parent == root) && (b.parent == root)) ? 3 : 1;
-                })
-                .size([height, width]);
-
-            var diagonal = d3.svg.diagonal()
-                .projection(function(d) {
-                    return [d.y, d.x];
+                <!--Generate a viewer for parent parcel--!>
+                var brainParent = brainsprite({
+                  canvas: "parcelParent",
+                  sprite: "template",
+                  nbSlice: { 'Y':229 , 'Z':193 },
+                  colorBackground: "#000000",
+                  colorFont: "#FFFFFF",
+                  flagCoordinates: true,
+                  origin: {X: 96.000, Y:132.000, Z:78.000},
+                  voxelSize: 1.000,
+                  overlay: {
+                    sprite: "parent",
+                    smooth: true,
+                    nbSlice: { 'Y':229 , 'Z':193 },
+                    opacity: 0.5
+                  },
+                  onclick: function(e) {
+                    brainChildren.numSlice = brainParent.numSlice;
+                    brainTarget.numSlice = brainParent.numSlice;
+                    brainChildren.drawAll();
+                    brainTarget.drawAll();
+                  },
                 });
 
-            var svg = d3.select("#simexp_tree_div").append("svg")
-                .attr("id", "simexp_svg")
-                .attr("width", width + margin.right + margin.left)
-                .attr("height", height + margin.top + margin.bottom)
-                //.attr("width", width)
-                //.attr("height", height)
-                .attr("overflow", "scroll")
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                <!--Generate a viewer for children parcels--!>
+                var brainChildren = brainsprite({
+                  canvas: "parcelChildren",
+                  sprite: "template",
+                  nbSlice: { 'Y':229 , 'Z':193 },
+                  colorBackground: "#000000",
+                  colorFont: "#FFFFFF",
+                  flagCoordinates: true,
+                  origin: {X: 96.000, Y:132.000, Z:78.000},
+                  voxelSize: 1.000,
+                  overlay: {
+                    sprite: "children",
+                    smooth: true,
+                    nbSlice: { 'Y':229 , 'Z':193 },
+                    opacity: 0.5
+                  },
+                  onclick: function(e) {
+                    brainParent.numSlice = brainChildren.numSlice;
+                    brainTarget.numSlice = brainChildren.numSlice;
+                    brainParent.drawAll();
+                    brainTarget.drawAll();
+                  },
+                });
 
-            // Allows for incorporation of non-numeric ROI scale
-            var scaleTextDict = {
-                    // "7": 7,
-                    "12": 12,
-                    "20": 20,
-                    "36": 36,
-                    "64": 64,
-                    "122": 122,
-                    "roi": 164 // Fake number just needs to be higher than 164
-            };
+                <!--Generate a viewer for target parcel--!>
+                var brainTarget = brainsprite({
+                  canvas: "parcelTarget",
+                  sprite: "template",
+                  nbSlice: { 'Y':229 , 'Z':193 },
+                  colorBackground: "#000000",
+                  colorFont: "#FFFFFF",
+                  flagCoordinates: true,
+                  origin: {X: 96.000, Y:132.000, Z:78.000},
+                  voxelSize: 1.000,
+                  overlay: {
+                    sprite: "target",
+                    smooth: true,
+                    nbSlice: { 'Y':229 , 'Z':193 },
+                    opacity: 0.5
+                  },
+                  onclick: function(e) {
+                    brainParent.numSlice = brainTarget.numSlice;
+                    brainChildren.numSlice = brainTarget.numSlice;
+                    brainParent.drawAll();
+                    brainChildren.drawAll();
+                  },
+                });
 
-            // Trees start out at scale level 12 and go up/down with the Expand/Collapse button
-            // var treeScaleLevel = 12;
-            var treeScaleLevel = scaleTextDict["roi"];
+                // Color parameters
+                var backgroundColor = "slategrey";
+                var nodes_clickedColor = "#FF4136";
+                var nodes_collapsedColor = "lightsteelblue";
+                var nodes_expandedColor = "#C0C0C0";
+                var nodes_labelColor = "white";
+                var nodes_labelBackgroundColor = "black";
+                var nodes_labelBackgroundOpacity = 0.3;
+                var nodes_labelScaleColor = "lightblue";
+                var nodes_radius = 7;
 
-            // Keep track of all tree nodes in a list of lists for easy expand/collapse
-            var nodeScaleDict = null;
-            function populateNodeScaleDict(p_node){
-                if ( null !== nodeScaleDict ){
-                    delete nodeScaleDict;
-                }
-                nodeScaleDict = {};
+                var full_width = 1500;
+                var full_height = 800;
+                var margin = {
+                        top: 20,
+                        right: 120,
+                        bottom: 20,
+                        left: 120
+                    },
+                    width = full_width - margin.right - margin.left,
+                    height = full_height - margin.top - margin.bottom;
 
-                populateNodeScaleDictHelper(root);
-            }
-            function populateNodeScaleDictHelper(p_node){
+                var i = 0,
+                    duration = 750,
+                    root;
 
-                var children = ( null == p_node.children ) ? p_node._children : p_node.children;
-                if ( null == children ){
-                    return;
-                }
+                var tree = d3.layout.tree()
+                    .separation(function(a, b) {
+                        // return (a.parent == b.parent ? 8 : 10);
+                        return ((a.parent == root) && (b.parent == root)) ? 3 : 1;
+                    })
+                    .size([height, width]);
 
-                var scaleValueStr = null;
-                for ( var index = 0; index < children.length; index++ ){
-                    scaleValueStr = children[index].scale.substring(1);
-                    if ( !(scaleValueStr in nodeScaleDict) ){
-                        nodeScaleDict[scaleValueStr] = [];
+                var diagonal = d3.svg.diagonal()
+                    .projection(function(d) {
+                        return [d.y, d.x];
+                    });
+
+                var svg = d3.select("#simexp_tree_div").append("svg")
+                    .attr("id", "simexp_svg")
+                    .attr("width", width + margin.right + margin.left)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("overflow", "scroll")
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                // Allows for incorporation of non-numeric ROI scale
+                var scaleTextDict = {
+                        // "7": 7,
+                        "12": 12,
+                        "20": 20,
+                        "36": 36,
+                        "64": 64,
+                        "122": 122,
+                        "roi": 164 // Fake number just needs to be higher than 164
+                };
+
+                // Trees start out at scale level 12 and go up/down with the Expand/Collapse button
+                // var treeScaleLevel = 12;
+                var treeScaleLevel = scaleTextDict["roi"];
+
+                // Keep track of all tree nodes in a list of lists for easy expand/collapse
+                var nodeScaleDict = null;
+                function populateNodeScaleDict(p_node){
+                    if ( null !== nodeScaleDict ){
+                        delete nodeScaleDict;
                     }
-                    nodeScaleDict[scaleValueStr].push(children[index]);
-                    populateNodeScaleDictHelper(children[index]);
+                    nodeScaleDict = {};
+
+                    populateNodeScaleDictHelper(root);
                 }
-            }
+                function populateNodeScaleDictHelper(p_node){
 
-            // Load the tree JSON
-            var jsonDataRef = null;
-            d3.json("./data/hierarchy_tree_inferno.json", function(error, jsonData) {
+                    var children = ( null == p_node.children ) ? p_node._children : p_node.children;
+                    if ( null == children ){
+                        return;
+                    }
 
-                // Save a reference to the json data
-                jsonDataRef = jsonData;
-
-                if ( error ) {
-                    throw error;
+                    var scaleValueStr = null;
+                    for ( var index = 0; index < children.length; index++ ){
+                        scaleValueStr = children[index].scale.substring(1);
+                        if ( !(scaleValueStr in nodeScaleDict) ){
+                            nodeScaleDict[scaleValueStr] = [];
+                        }
+                        nodeScaleDict[scaleValueStr].push(children[index]);
+                        populateNodeScaleDictHelper(children[index]);
+                    }
                 }
 
-                // Populate a select box for the different ROIs
-                var selector = d3.select("#simexp_tree_roi_selector");
-                for ( var index = 0; index < jsonData.length; index++ ){
-                    if ( 0 == index ) {
-                        selector.append("option").attr("value", jsonData[index].roi)
-                                                 .attr("selected", "selected")
-                                                 .text(jsonData[index].name);
+                // Load the tree JSON
+                var jsonDataRef = null;
+                d3.json("./data/hierarchy_tree_inferno.json", function(error, jsonData) {
+
+                    // Save a reference to the json data
+                    jsonDataRef = jsonData;
+
+                    if ( error ) {
+                        throw error;
+                    }
+
+                    // Populate a select box for the different ROIs
+                    var selector = d3.select("#simexp_tree_roi_selector");
+                    for ( var index = 0; index < jsonData.length; index++ ){
+                        if ( 0 == index ) {
+                            selector.append("option").attr("value", jsonData[index].roi)
+                                                     .attr("selected", "selected")
+                                                     .text(jsonData[index].name);
+                        } else {
+                            selector.append("option").attr("value", jsonData[index].roi)
+                                                     .text(jsonData[index].name);
+                        }
+                    }
+
+                    // Populate a select box for the different scales
+                    var selector = d3.select("#simexp_tree_scale_selector");
+                    for ( var index = 0; index < Object.keys(scaleTextDict).length; index++ ) {
+                        // if ( 0 == index ) {
+                        if ( Object.keys(scaleTextDict).length - 1 == index ){
+
+                            // selector.append("option").attr("value", scaleTextDict[Object.keys(scaleTextDict)[index]])
+                            selector.append("option").attr("value", Object.keys(scaleTextDict)[index])
+                                                     .attr("selected", "selected")
+                                                     .text(Object.keys(scaleTextDict)[index]);
+                        } else {
+                            // selector.append("option").attr("value", scaleTextDict[Object.keys(scaleTextDict)[index]])
+                            selector.append("option").attr("value", Object.keys(scaleTextDict)[index])
+                                                     .text(Object.keys(scaleTextDict)[index]);
+                        }
+                    }
+
+                    var initialTreeIndex = 0;
+                    root = jsonData[initialTreeIndex];
+                    root.x0 = height / 2;
+                    root.y0 = 0;
+
+                    function collapse(d) {
+
+                        if ( d.children ) {
+                            d._children = d.children;
+                            d._children.forEach(collapse);
+                            d.children = null;
+                        }
+                    }
+
+                    root.children.forEach(collapse);
+                    update(root);
+
+                    // Set initial label text for Brainsprite viewers
+                    var base = root.children[0]._children[0];
+                    var d = {
+                      parent:  {
+                        name:  base.parentName,
+                        roi:   base.parentROI,
+                        scale: base.parentScale
+                      },
+                      roi:   base.roi,
+                      name:  base.name,
+                      scale: base.scale,
+                      com:   base.com
+                    };
+                    $("#parentText").text("Parent (" + d.parent.scale + "): " + d.parent.name);
+                    $("#childrenText").text("All children ("+ d.scale + ") of " + d.parent.name);
+                    $("#targetText").text("Parcel (" + d.scale + "): " + d.name);
+
+                    // Keep track of all nodes in a flat dict for easy browsing
+                    populateNodeScaleDict(root);
+
+                    // Make sure tree starts at max scale
+                    expandToScaleLevel();
+                });
+
+                // For iframe insertion (?)
+                d3.select(self.frameElement).style("height", "800px");
+
+                // Define the div for the tooltip
+                var div = d3.select("body").append("div")
+                    .attr("class", "simexp_tree_tooltip")
+                    .style("opacity", 0);
+
+                // Function to generate the html for the tool tip based on data
+                function toolTipHTML(p_data) {
+
+                    var fieldsHTML = [
+                        "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>scale:</b></span> " + p_data.scale.substring(1) + "<br>",
+                        "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>roi:</b></span> " + p_data.roi + "<br>",
+                        "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>name:</b></span> " + p_data.name + "<br>",
+                        "<hr style=\"text-align: center; width: 90%;\">",
+                        "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>laterality:</b></span> " + p_data.laterality + "<br>",
+                        "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>overlap:</b></span> " + parseFloat(p_data.overlap).toFixed(2) + "<br>",
+                        "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>size:</b></span> " + p_data.size + "<br>",
+                        "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>symmetry:</b></span> " + p_data.symmetry + "<br>"
+                    ];
+                    return fieldsHTML.join("");
+                };
+
+                // Set background color;
+                d3.select("body").style("background-color", backgroundColor);
+                d3.select("svg").style("background-color", backgroundColor);
+
+                // Set selector functionality to switch trees
+                d3.select("#simexp_tree_roi_selector").on("change", function() {
+                    var sect = document.getElementById("simexp_tree_roi_selector");
+                    var roi = sect.options[sect.selectedIndex].value;
+
+                    // Switch ROI trees
+                    root = jsonDataRef[parseInt(roi) - 1];
+                    root.x0 = height / 2;
+                    root.y0 = 0;
+                    root.children.forEach(expand);
+
+                    // Switch Brainsprite viewer images and change viewer labels
+                    if (root.children.length==1) {
+                      var base = root.children[0].children[0];
                     } else {
-                        selector.append("option").attr("value", jsonData[index].roi)
-                                                 .text(jsonData[index].name);
+                      var base = root.children[0];
+                    };
+                    var d = {
+                      parent:  {
+                        name:  base.parentName,
+                        roi:   base.parentROI,
+                        scale: base.parentScale
+                      },
+                      roi:   base.roi,
+                      name:  base.name,
+                      scale: base.scale,
+                      com:   base.com
+                    };
+                    click(d);
+
+                    // Keep track of all nodes in a flat dict for easy browsing
+                    populateNodeScaleDict(root);
+
+                    // Trick redraw to sticking with scale level in dropdown
+                    update(root);
+                    treeScaleLevel = scaleTextDict["roi"];
+                    chooseExpandOrCollapseToScaleLevel();
+                });
+
+                // Adapted from https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
+                function setNodeLabelBackground(p_textNode){
+
+                    var context = p_textNode.node().parentNode,
+                    textElement = p_textNode.node(),
+                    textBoundingBox = textElement.getBBox();
+
+                    var rectangle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rectangle.setAttribute("x", textBoundingBox.x - 3);
+                    rectangle.setAttribute("y", textBoundingBox.y - 1);
+                    rectangle.setAttribute("width", textBoundingBox.width + 6);
+                    rectangle.setAttribute("height", textBoundingBox.height + 2);
+                    rectangle.setAttribute("fill", nodes_labelBackgroundColor);
+                    rectangle.setAttribute("fill-opacity", nodes_labelBackgroundOpacity);
+                    context.insertBefore(rectangle, textElement);
+                }
+
+                // Reacts to the scale selector, indicating toggle of functionality of the Expand/Collapse button
+                function changeExpandCollapseButtonText(){
+
+                    var scaleSelector = document.getElementById("simexp_tree_scale_selector");
+                    var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
+                    var expandCollapseButton = d3.select("#expandCollapseButton");
+                    if ( currentSelectorScale > treeScaleLevel ){
+                        expandCollapseButton.html("&nbsp;Expand&nbsp;");
+                    } else if ( currentSelectorScale < treeScaleLevel ) {
+                        var previousButtonWidth = expandCollapseButton.style("width");
+                        expandCollapseButton.text("Collapse")
+                                            .style("width", previousButtonWidth);
                     }
                 }
 
-                // Populate a select box for the different scales
-                var selector = d3.select("#simexp_tree_scale_selector");
-                for ( var index = 0; index < Object.keys(scaleTextDict).length; index++ ) {
-                    // if ( 0 == index ) {
-                    if ( Object.keys(scaleTextDict).length - 1 == index ){
+                // Custom styling for tutorial for tree window
+                // introJs().onchange(function(targetElement) {
+                //     switch (targetElement.getAttribute("data-step"))
+                //     {
+                //         case "2":
+                //             // Move tooltip downward
+                //             $(".introjs-tooltip").css("bottom", "500px");
+                //             break;
+                //         }
+                //     });
 
-                        // selector.append("option").attr("value", scaleTextDict[Object.keys(scaleTextDict)[index]])
-                        selector.append("option").attr("value", Object.keys(scaleTextDict)[index])
-                                                 .attr("selected", "selected")
-                                                 .text(Object.keys(scaleTextDict)[index]);
-                    } else {
-                        // selector.append("option").attr("value", scaleTextDict[Object.keys(scaleTextDict)[index]])
-                        selector.append("option").attr("value", Object.keys(scaleTextDict)[index])
-                                                 .text(Object.keys(scaleTextDict)[index]);
-                    }
+                // References last clicked node
+                var lastClickedNode = null;
+                var lastClickedNodeName = "";
+                var lastClickedScale = "";
+
+                function update(source, p_myNodes=null) {
+
+                    // Compute the new tree layout.
+                    var nodes = tree.nodes(root).reverse(),
+                        links = tree.links(nodes);
+
+                    // Normalize for fixed-depth.
+                    nodes.forEach(function(d) {
+                        d.y = d.depth * 180;
+                    });
+
+                    // Update the nodes…
+                    var node = svg.selectAll("g.simexp_tree_node")
+                        .data(nodes, function(d) {
+                            return d.id || (d.id = ++i);
+                        });
+
+                    // Enter any new nodes at the parent's previous position.
+                    var nodeEnter = node.enter().append("g")
+                        .attr("class", "simexp_tree_node")
+                        .attr("transform", function(d) {
+                            return "translate(" + source.y0 + "," + source.x0 + ")";
+                        })
+                        .on("click", function(d){
+
+                            // Color clicked node a special color "nodes_clickedColor"
+                            if ( null !== lastClickedNode ) {
+
+                                d3.selectAll(".simexp_tree_node").selectAll("circle").style("fill", function(){
+
+                                    var parentData = d3.select(this.parentNode).datum();
+                                    if ( parentData && parentData._children )
+                                        return nodes_collapsedColor;
+                                    else
+                                        return d3.select(this).style("fill", nodes_expandedColor);
+                                });
+                            }
+                            d3.select(this).selectAll("circle").style("fill", nodes_clickedColor);
+                            lastClickedNode = this;
+                            lastClickedNodeName = d.name;
+                            lastClickedScale = d.scale;
+
+                            // Proceed with normal click behavior for Brainsprite viewer changes
+                            click(d);
+                        })
+                        .on("dblclick",dblclick);
+
+                    nodeEnter.append("circle")
+                        .attr("r", 1e-6)
+                        .style("fill", function(d) {
+
+                            if ( d.name == lastClickedNodeName && d.scale == lastClickedScale ){
+                                return nodes_clickedColor;
+                            }
+
+                            return d._children ? nodes_collapsedColor : nodes_expandedColor;
+                        })
+                        .on("mouseover", function(d) {
+
+                            var tooltip_div = d3.select(".simexp_tree_tooltip");
+                            tooltip_div.transition()
+                                       .duration(200)
+                                       .style("opacity", .9);
+                            tooltip_div.html(function(){ return toolTipHTML(d); })
+                                       .style("left", (d3.event.pageX) + "px")
+                                       .style("top", (d3.event.pageY - 28) + "px");
+                            })
+                        .on("mouseout", function(d) {
+
+                            var tooltip_div = d3.select(".simexp_tree_tooltip");
+                            tooltip_div.transition()
+                                       .duration(500)
+                                       .style("opacity", 0);
+                        });
+
+                    nodeEnter.append("text")
+                        .attr("x", function(d) {
+                            return d.children || d._children ? -10 : 10;
+                        })
+                        .attr("dy", ".35em")
+                        .attr("text-anchor", function(d) {
+                            return d.children || d._children ? "end" : "start";
+                        })
+                        .style("fill-opacity", 1e-6)
+                        .each(function(){
+
+                            d3.select(this).append("tspan")
+                                           .text(function(d){ return d.scale + "_"; })
+                                           .attr("class", "simexp_label_text")
+                                           .attr("fill", function(d){
+                                                return nodes_labelScaleColor;
+                                            });
+
+                            d3.select(this).append("tspan")
+                                           .text(function(d){ return d.label; })
+                                           .attr("class", "simexp_label_text")
+                                           .attr("fill", nodes_labelColor);
+
+                            setNodeLabelBackground(d3.select(this));
+                        });
+
+                    // Transition nodes to their new position.
+                    var nodeUpdate = node.transition()
+                        .duration(duration)
+                        .attr("transform", function(d) {
+                            if ( "undefined" !== typeof(d.x) || "undefined" !== typeof(d.y) )
+                                return "translate(" + d.y + "," + d.x + ")";
+                            else
+                                return "";
+                        });
+
+                    nodeUpdate.select("circle")
+                        .attr("r", nodes_radius)
+                        .style("fill", function(d) {
+
+                            if ( lastClickedNode && this == lastClickedNode.childNodes[0] ){
+                                return nodes_clickedColor;
+                            } else if ( d.name == lastClickedNodeName && d.scale == lastClickedScale ){
+                                return nodes_clickedColor;
+                            }
+
+                            return d._children ? nodes_collapsedColor : nodes_expandedColor;
+                        });
+
+                    nodeUpdate.select("text")
+                        .style("fill-opacity", 1)
+                        .style("fill", nodes_labelColor);
+
+                    // Transition exiting nodes to the parent's new position.
+                    var nodeExit = node.exit().transition()
+                        .duration(duration)
+                        .attr("transform", function(d) {
+                            if ( "undefined" !== typeof(source.x) || "undefined" !== typeof(source.y) )
+                                return "translate(" + source.y + "," + source.x + ")";
+                            else
+                                return "";
+                        })
+                        .remove();
+
+                    nodeExit.select("circle")
+                        .attr("r", 1e-6);
+
+                    nodeExit.select("text")
+                        .style("fill-opacity", 1e-6);
+
+                    // Update the links…
+                    var link = svg.selectAll("path.simexp_tree_link")
+                        .data(links, function(d) {
+                            return d.target.id;
+                        });
+
+                    // Enter any new links at the parent's previous position.
+                    link.enter().insert("path", "g")
+                        .attr("class", "simexp_tree_link")
+                        .attr("d", function(d) {
+
+                            var o = {
+                                x: source.x0,
+                                y: source.y0
+                            };
+
+                            return diagonal({
+                                source: o,
+                                target: o
+                            });
+                        })
+                        .attr("stroke", function(d){
+                            return d.target.color;
+                        });
+
+                    // Transition links to their new position.
+                    link.transition()
+                        .duration(duration)
+                        .attr("d", diagonal);
+
+                    // Transition exiting nodes to the parent's new position.
+                    link.exit().transition()
+                        .duration(duration)
+                        .attr("d", function(d) {
+
+                            var o = {
+                                x: source.x,
+                                y: source.y
+                            };
+
+                            return diagonal({
+                                source: o,
+                                target: o
+                            });
+                        })
+                        .remove();
+
+                    // Stash the old positions for transition.
+                    nodes.forEach(function(d) {
+
+                        d.x0 = d.x;
+                        d.y0 = d.y;
+                    });
                 }
 
-                var initialTreeIndex = 0;
-                root = jsonData[initialTreeIndex];
-                root.x0 = height / 2;
-                root.y0 = 0;
+                // Toggle children on click.
+                function click(d) {
+
+                    // Skip Scale 7 root, treat as Scale 12 child
+                    if ( "" == d.parent )
+                        d = d.children[0];
+
+                    <!--Update figures-->
+                    var maxChars = 40;
+                    var parentName = d.parent.name;
+                    if ( parentName.length > 40 )
+                        parentName = parentName.substring(0, maxChars) + "...";
+                    $("#parentText").text("Parent (" + d.parent.scale + "): " + parentName);
+                    brainParent.numSlice.X = Math.round((d.com[0]+brainParent.origin.X)/brainParent.voxelSize);
+                    brainParent.numSlice.Y = Math.round((d.com[1]+brainParent.origin.Y)/brainParent.voxelSize);
+                    brainParent.numSlice.Z = brainParent.nbSlice.Z-Math.round((d.com[2]+brainParent.origin.Z)/brainParent.voxelSize)-1;
+                    brainChildren.numSlice = brainParent.numSlice;
+                    brainTarget.numSlice = brainParent.numSlice;
+                    brainParent.overlay.sprite.src = "./images/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + ".png";
+
+                    $("#childrenText").text("All children ("+ d.scale + ") of " + parentName);
+                    brainChildren.overlay.sprite.src = "./images/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + "_children.png";
+                    var targetName = d.name;
+                    if ( targetName.length > 40 )
+                        targetName = targetName.substring(0, maxChars) + "...";
+                    $("#targetText").text("Parcel (" + d.scale + "): " + targetName);
+                    brainTarget.overlay.sprite.src = "./images/resolution_" + d.scale + "_roi_" + d.roi + ".png";
+                }
+
+                // Update brain sprite on double click.
+                function dblclick(d) {
+
+                    click(d)
+                }
+
+                // ========= Expand /Collapse functionality =========
+                function expand(d){
+                    var children = ( d.children ) ? d.children : d._children;
+                    if ( d._children ) {
+                        d.children = d._children;
+                        d._children = null;
+                    }
+                    if ( d.children )
+                      children.forEach(expand);
+                }
 
                 function collapse(d) {
 
@@ -320,487 +750,102 @@
                     }
                 }
 
-                root.children.forEach(collapse);
-                update(root);
-
-                // Set initial label text for Brainsprite viewers
-                var base = root.children[0]._children[0];
-                var d = {
-                  parent:  {
-                    name:  base.parentName,
-                    roi:   base.parentROI,
-                    scale: base.parentScale
-                  },
-                  roi:   base.roi,
-                  name:  base.name,
-                  scale: base.scale,
-                  com:   base.com
-                };
-                $("#parentText").text("Parent (" + d.parent.scale + "): " + d.parent.name);
-                $("#childrenText").text("All children ("+ d.scale + ") of " + d.parent.name);
-                $("#targetText").text("Parcel (" + d.scale + "): " + d.name);
-
-                // Keep track of all nodes in a flat dict for easy browsing
-                populateNodeScaleDict(root);
-
-                // Make sure tree starts at max scale
-                expandToScaleLevel();
-            });
-
-            // For iframe insertion (?)
-            d3.select(self.frameElement).style("height", "800px");
-
-            // Define the div for the tooltip
-            var div = d3.select("body").append("div")
-                .attr("class", "simexp_tree_tooltip")
-                .style("opacity", 0);
-
-            // Function to generate the html for the tool tip based on data
-            function toolTipHTML(p_data) {
-
-                var fieldsHTML = [
-                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>scale:</b></span> " + p_data.scale.substring(1) + "<br>",
-                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>roi:</b></span> " + p_data.roi + "<br>",
-                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>name:</b></span> " + p_data.name + "<br>",
-                    "<hr style=\"text-align: center; width: 90%;\">",
-                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>laterality:</b></span> " + p_data.laterality + "<br>",
-                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>overlap:</b></span> " + parseFloat(p_data.overlap).toFixed(2) + "<br>",
-                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>size:</b></span> " + p_data.size + "<br>",
-                    "<span class=\".simexp_tree_tooltip_fieldtitle\"><b>symmetry:</b></span> " + p_data.symmetry + "<br>"
-                ];
-                return fieldsHTML.join("");
-            };
-
-            // Set background color;
-            d3.select("body").style("background-color", backgroundColor);
-            d3.select("svg").style("background-color", backgroundColor);
-
-            // Set selector functionality to switch trees
-            d3.select("#simexp_tree_roi_selector").on("change", function() {
-                var sect = document.getElementById("simexp_tree_roi_selector");
-                var roi = sect.options[sect.selectedIndex].value;
-
-                // Switch ROI trees
-                root = jsonDataRef[parseInt(roi) - 1];
-                root.x0 = height / 2;
-                root.y0 = 0;
-                root.children.forEach(expand);
-
-                // Switch Brainsprite viewer images and change viewer labels
-                if (root.children.length==1) {
-                  var base = root.children[0].children[0];
-                } else {
-                  var base = root.children[0];
-                };
-                var d = {
-                  parent:  {
-                    name:  base.parentName,
-                    roi:   base.parentROI,
-                    scale: base.parentScale
-                  },
-                  roi:   base.roi,
-                  name:  base.name,
-                  scale: base.scale,
-                  com:   base.com
-                };
-                click(d);
-
-                // Keep track of all nodes in a flat dict for easy browsing
-                populateNodeScaleDict(root);
-
-                // Trick redraw to sticking with scale level in dropdown
-                update(root);
-                treeScaleLevel = scaleTextDict["roi"];
-                chooseExpandOrCollapseToScaleLevel();
-            });
-
-            // Adapted from https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
-            function setNodeLabelBackground(p_textNode){
-
-                var context = p_textNode.node().parentNode,
-                textElement = p_textNode.node(),
-                textBoundingBox = textElement.getBBox();
-
-                var rectangle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                rectangle.setAttribute("x", textBoundingBox.x - 3);
-                rectangle.setAttribute("y", textBoundingBox.y - 1);
-                rectangle.setAttribute("width", textBoundingBox.width + 6);
-                rectangle.setAttribute("height", textBoundingBox.height + 2);
-                rectangle.setAttribute("fill", nodes_labelBackgroundColor);
-                rectangle.setAttribute("fill-opacity", nodes_labelBackgroundOpacity);
-                context.insertBefore(rectangle, textElement);
-            }
-
-            // Reacts to the scale selector, indicating toggle of functionality of the Expand/Collapse button
-            function changeExpandCollapseButtonText(){
-
-                var scaleSelector = document.getElementById("simexp_tree_scale_selector");
-                var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
-                var expandCollapseButton = d3.select("#expandCollapseButton");
-                if ( currentSelectorScale > treeScaleLevel ){
-                    expandCollapseButton.html("&nbsp;Expand&nbsp;");
-                } else if ( currentSelectorScale < treeScaleLevel ) {
-                    var previousButtonWidth = expandCollapseButton.style("width");
-                    expandCollapseButton.text("Collapse")
-                                        .style("width", previousButtonWidth);
-                }
-            }
-
-            // References last clicked node
-            var lastClickedNode = null;
-            var lastClickedNodeName = "";
-            var lastClickedScale = "";
-
-            function update(source, p_myNodes=null) {
-
-                // Compute the new tree layout.
-                var nodes = tree.nodes(root).reverse(),
-                    links = tree.links(nodes);
-
-                // Normalize for fixed-depth.
-                nodes.forEach(function(d) {
-                    d.y = d.depth * 180;
-                });
-
-                // Update the nodes…
-                var node = svg.selectAll("g.simexp_tree_node")
-                    .data(nodes, function(d) {
-                        return d.id || (d.id = ++i);
-                    });
-
-                // Enter any new nodes at the parent's previous position.
-                var nodeEnter = node.enter().append("g")
-                    .attr("class", "simexp_tree_node")
-                    .attr("transform", function(d) {
-                        return "translate(" + source.y0 + "," + source.x0 + ")";
-                    })
-                    .on("click", function(d){
-
-                        // Color clicked node a special color "nodes_clickedColor"
-                        if ( null !== lastClickedNode ) {
-
-                            d3.selectAll(".simexp_tree_node").selectAll("circle").style("fill", function(){
-
-                                var parentData = d3.select(this.parentNode).datum();
-                                if ( parentData && parentData._children )
-                                    return nodes_collapsedColor;
-                                else
-                                    return d3.select(this).style("fill", nodes_expandedColor);
-                            });
-                        }
-                        d3.select(this).selectAll("circle").style("fill", nodes_clickedColor);
-                        lastClickedNode = this;
-                        lastClickedNodeName = d.name;
-                        lastClickedScale = d.scale;
-
-                        // Proceed with normal click behavior for Brainsprite viewer changes
-                        click(d);
-                    })
-                    .on("dblclick",dblclick);
-
-                nodeEnter.append("circle")
-                    .attr("r", 1e-6)
-                    .style("fill", function(d) {
-
-                        if ( d.name == lastClickedNodeName && d.scale == lastClickedScale ){
-                            return nodes_clickedColor;
-                        }
-
-                        return d._children ? nodes_collapsedColor : nodes_expandedColor;
-                    })
-                    .on("mouseover", function(d) {
-
-                        var tooltip_div = d3.select(".simexp_tree_tooltip");
-                        tooltip_div.transition()
-                                   .duration(200)
-                                   .style("opacity", .9);
-                        tooltip_div.html(function(){ return toolTipHTML(d); })
-                                   .style("left", (d3.event.pageX) + "px")
-                                   .style("top", (d3.event.pageY - 28) + "px");
-                        })
-                    .on("mouseout", function(d) {
-
-                        var tooltip_div = d3.select(".simexp_tree_tooltip");
-                        tooltip_div.transition()
-                                   .duration(500)
-                                   .style("opacity", 0);
-                    });
-
-                nodeEnter.append("text")
-                    .attr("x", function(d) {
-                        return d.children || d._children ? -10 : 10;
-                    })
-                    .attr("dy", ".35em")
-                    .attr("text-anchor", function(d) {
-                        return d.children || d._children ? "end" : "start";
-                    })
-                    .style("fill-opacity", 1e-6)
-                    .each(function(){
-
-                        d3.select(this).append("tspan")
-                                       .text(function(d){ return d.scale + "_"; })
-                                       .attr("class", "simexp_label_text")
-                                       .attr("fill", function(d){
-                                            return nodes_labelScaleColor;
-                                        });
-
-                        d3.select(this).append("tspan")
-                                       .text(function(d){ return d.label; })
-                                       .attr("class", "simexp_label_text")
-                                       .attr("fill", nodes_labelColor);
-
-                        setNodeLabelBackground(d3.select(this));
-                    });
-
-                // Transition nodes to their new position.
-                var nodeUpdate = node.transition()
-                    .duration(duration)
-                    .attr("transform", function(d) {
-                        if ( "undefined" !== typeof(d.x) || "undefined" !== typeof(d.y) )
-                            return "translate(" + d.y + "," + d.x + ")";
-                        else
-                            return "";
-                    });
-
-                nodeUpdate.select("circle")
-                    .attr("r", nodes_radius)
-                    .style("fill", function(d) {
-
-                        if ( lastClickedNode && this == lastClickedNode.childNodes[0] ){
-                            return nodes_clickedColor;
-                        } else if ( d.name == lastClickedNodeName && d.scale == lastClickedScale ){
-                            return nodes_clickedColor;
-                        }
-
-                        return d._children ? nodes_collapsedColor : nodes_expandedColor;
-                    });
-
-                nodeUpdate.select("text")
-                    .style("fill-opacity", 1)
-                    .style("fill", nodes_labelColor);
-
-                // Transition exiting nodes to the parent's new position.
-                var nodeExit = node.exit().transition()
-                    .duration(duration)
-                    .attr("transform", function(d) {
-                        if ( "undefined" !== typeof(source.x) || "undefined" !== typeof(source.y) )
-                            return "translate(" + source.y + "," + source.x + ")";
-                        else
-                            return "";
-                    })
-                    .remove();
-
-                nodeExit.select("circle")
-                    .attr("r", 1e-6);
-
-                nodeExit.select("text")
-                    .style("fill-opacity", 1e-6);
-
-                // Update the links…
-                var link = svg.selectAll("path.simexp_tree_link")
-                    .data(links, function(d) {
-                        return d.target.id;
-                    });
-
-                // Enter any new links at the parent's previous position.
-                link.enter().insert("path", "g")
-                    .attr("class", "simexp_tree_link")
-                    .attr("d", function(d) {
-
-                        var o = {
-                            x: source.x0,
-                            y: source.y0
-                        };
-
-                        return diagonal({
-                            source: o,
-                            target: o
-                        });
-                    })
-                    .attr("stroke", function(d){
-                        return d.target.color;
-                    });
-
-                // Transition links to their new position.
-                link.transition()
-                    .duration(duration)
-                    .attr("d", diagonal);
-
-                // Transition exiting nodes to the parent's new position.
-                link.exit().transition()
-                    .duration(duration)
-                    .attr("d", function(d) {
-
-                        var o = {
-                            x: source.x,
-                            y: source.y
-                        };
-
-                        return diagonal({
-                            source: o,
-                            target: o
-                        });
-                    })
-                    .remove();
-
-                // Stash the old positions for transition.
-                nodes.forEach(function(d) {
-
-                    d.x0 = d.x;
-                    d.y0 = d.y;
-                });
-            }
-
-            // Toggle children on click.
-            function click(d) {
-
-                // Skip Scale 7 root, treat as Scale 12 child
-                if ( "" == d.parent )
-                    d = d.children[0];
-
-                <!--Update figures-->
-                var maxChars = 40;
-                var parentName = d.parent.name;
-                if ( parentName.length > 40 )
-                    parentName = parentName.substring(0, maxChars) + "...";
-                $("#parentText").text("Parent (" + d.parent.scale + "): " + parentName);
-                brainParent.numSlice.X = Math.round((d.com[0]+brainParent.origin.X)/brainParent.voxelSize);
-                brainParent.numSlice.Y = Math.round((d.com[1]+brainParent.origin.Y)/brainParent.voxelSize);
-                brainParent.numSlice.Z = brainParent.nbSlice.Z-Math.round((d.com[2]+brainParent.origin.Z)/brainParent.voxelSize)-1;
-                brainChildren.numSlice = brainParent.numSlice;
-                brainTarget.numSlice = brainParent.numSlice;
-                brainParent.overlay.sprite.src = "./images/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + ".png";
-
-                $("#childrenText").text("All children ("+ d.scale + ") of " + parentName);
-                brainChildren.overlay.sprite.src = "./images/resolution_" + d.parent.scale + "_roi_" + d.parent.roi + "_children.png";
-                var targetName = d.name;
-                if ( targetName.length > 40 )
-                    targetName = targetName.substring(0, maxChars) + "...";
-                $("#targetText").text("Parcel (" + d.scale + "): " + targetName);
-                brainTarget.overlay.sprite.src = "./images/resolution_" + d.scale + "_roi_" + d.roi + ".png";
-            }
-
-            // Update brain sprite on double click.
-            function dblclick(d) {
-
-                click(d)
-            }
-
-            // ========= Expand /Collapse functionality =========
-            function expand(d){
-                var children = ( d.children ) ? d.children : d._children;
-                if ( d._children ) {
-                    d.children = d._children;
-                    d._children = null;
-                }
-                if ( d.children )
-                  children.forEach(expand);
-            }
-
-            function collapse(d) {
-
-                if ( d.children ) {
-                    d._children = d.children;
-                    d._children.forEach(collapse);
-                    d.children = null;
-                }
-            }
-
-            function chooseExpandOrCollapseToScaleLevel(){
-
-                var scaleSelector = document.getElementById("simexp_tree_scale_selector");
-                var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
-                if ( currentSelectorScale > treeScaleLevel ){
-                    expandToScaleLevel();
-                } else if ( currentSelectorScale < treeScaleLevel ) {
-                    collapseToScaleLevel();
-                }
-            }
-
-            function expandToScaleLevel(){
-
-                var scaleSelector = document.getElementById("simexp_tree_scale_selector");
-                var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
-
-                // Expand nodes with scales below the one in the scale dropdown
-                var scaleOrder = ["12", "20", "36", "64", "122", "roi" ];
-                var nodesExpanded = [];
-                for ( var index = 0; index < scaleOrder.length; index++ ){
-                    if ( scaleTextDict[scaleOrder[index]] < currentSelectorScale ){
-                        for ( var index2 = 0; index2 < nodeScaleDict[scaleOrder[index]].length; index2++ ){
-                            expand(nodeScaleDict[scaleOrder[index]][index2]);
-                            nodesExpanded.push(nodeScaleDict[scaleOrder[index]][index2]);
-                        }
-                    } else {
-                        for ( var index2 = 0; index2 < nodeScaleDict[scaleOrder[index]].length; index2++ ){
-                            collapse(nodeScaleDict[scaleOrder[index]][index2]);
-                        }
+                function chooseExpandOrCollapseToScaleLevel(){
+
+                    var scaleSelector = document.getElementById("simexp_tree_scale_selector");
+                    var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
+                    if ( currentSelectorScale > treeScaleLevel ){
+                        expandToScaleLevel();
+                    } else if ( currentSelectorScale < treeScaleLevel ) {
+                        collapseToScaleLevel();
                     }
                 }
 
-                // Update tree with branch expansions made (made separately for better looking/timed expansion)
-                for ( var index = 0; index < nodesExpanded.length; index++ ){
-                   update(nodesExpanded[index]);
-                }
+                function expandToScaleLevel(){
 
-                // Save the new tree level
-                treeScaleLevel = currentSelectorScale;
-            }
+                    var scaleSelector = document.getElementById("simexp_tree_scale_selector");
+                    var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
 
-            function findParent(p_node){
-
-                var scaleOrder = ["12", "20", "36", "64", "122", "roi" ];
-
-                for ( var index = 0; index < scaleOrder.length; index++ ){
-                    for ( var index2 = 0; index2 < nodeScaleDict[scaleOrder[index]].length; index2++ ){
-                        if ( nodeScaleDict[scaleOrder[index]][index2].children &&
-                             nodeScaleDict[scaleOrder[index]][index2].children.includes(p_node) ){
-                            return nodeScaleDict[scaleOrder[index]][index2];
+                    // Expand nodes with scales below the one in the scale dropdown
+                    var scaleOrder = ["12", "20", "36", "64", "122", "roi" ];
+                    var nodesExpanded = [];
+                    for ( var index = 0; index < scaleOrder.length; index++ ){
+                        if ( scaleTextDict[scaleOrder[index]] < currentSelectorScale ){
+                            for ( var index2 = 0; index2 < nodeScaleDict[scaleOrder[index]].length; index2++ ){
+                                expand(nodeScaleDict[scaleOrder[index]][index2]);
+                                nodesExpanded.push(nodeScaleDict[scaleOrder[index]][index2]);
+                            }
+                        } else {
+                            for ( var index2 = 0; index2 < nodeScaleDict[scaleOrder[index]].length; index2++ ){
+                                collapse(nodeScaleDict[scaleOrder[index]][index2]);
+                            }
                         }
                     }
+
+                    // Update tree with branch expansions made (made separately for better looking/timed expansion)
+                    for ( var index = 0; index < nodesExpanded.length; index++ ){
+                       update(nodesExpanded[index]);
+                    }
+
+                    // Save the new tree level
+                    treeScaleLevel = currentSelectorScale;
                 }
 
-                return null;
-            }
+                function findParent(p_node){
 
-            function collapseToScaleLevel(){
+                    var scaleOrder = ["12", "20", "36", "64", "122", "roi" ];
 
-                var scaleSelector = document.getElementById("simexp_tree_scale_selector");
-                var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
-
-                // Collapse nodes with scales above the one in the scale dropdown
-                var scaleOrder = ["12", "20", "36", "64", "122", "roi" ];
-                var nodesCollapsed = [];
-                for ( var index = scaleOrder.length - 1; index >= 0; index-- ){
-                    if ( scaleTextDict[scaleOrder[index]] >= currentSelectorScale ){
+                    for ( var index = 0; index < scaleOrder.length; index++ ){
                         for ( var index2 = 0; index2 < nodeScaleDict[scaleOrder[index]].length; index2++ ){
-                            collapse(nodeScaleDict[scaleOrder[index]][index2]);
-                            nodesCollapsed.push(nodeScaleDict[scaleOrder[index]][index2]);
+                            if ( nodeScaleDict[scaleOrder[index]][index2].children &&
+                                 nodeScaleDict[scaleOrder[index]][index2].children.includes(p_node) ){
+                                return nodeScaleDict[scaleOrder[index]][index2];
+                            }
                         }
                     }
+
+                    return null;
                 }
 
-                // Update tree with branch collapses made
-                for ( var index = 0; index < nodesCollapsed.length; index++ ){
-                    update(nodesCollapsed[index]);
+                function collapseToScaleLevel(){
+
+                    var scaleSelector = document.getElementById("simexp_tree_scale_selector");
+                    var currentSelectorScale = scaleTextDict[scaleSelector.options[scaleSelector.selectedIndex].value];
+
+                    // Collapse nodes with scales above the one in the scale dropdown
+                    var scaleOrder = ["12", "20", "36", "64", "122", "roi" ];
+                    var nodesCollapsed = [];
+                    for ( var index = scaleOrder.length - 1; index >= 0; index-- ){
+                        if ( scaleTextDict[scaleOrder[index]] >= currentSelectorScale ){
+                            for ( var index2 = 0; index2 < nodeScaleDict[scaleOrder[index]].length; index2++ ){
+                                collapse(nodeScaleDict[scaleOrder[index]][index2]);
+                                nodesCollapsed.push(nodeScaleDict[scaleOrder[index]][index2]);
+                            }
+                        }
+                    }
+
+                    // Update tree with branch collapses made
+                    for ( var index = 0; index < nodesCollapsed.length; index++ ){
+                        update(nodesCollapsed[index]);
+                    }
+
+                    // Save the new tree level
+                    treeScaleLevel = currentSelectorScale;
                 }
 
-                // Save the new tree level
-                treeScaleLevel = currentSelectorScale;
-            }
+                function expandAll(){
 
-            function expandAll(){
+                    expand(root);
+                    update(root);
+                }
 
-                expand(root);
-                update(root);
-            }
+                function collapseAll(){
 
-            function collapseAll(){
-
-                root.children.forEach(collapse);
-                collapse(root);
-                update(root);
-            }
+                    root.children.forEach(collapse);
+                    collapse(root);
+                    update(root);
+                }
+            }); // Close imagesLoaded function
 
         </script>
     </body>
