@@ -180,7 +180,7 @@
             // Keep track of all tree nodes in a list of lists for easy expand/collapse
             var nodeScaleDict = null;
             function populateNodeScaleDict(p_node){
-                
+
                 if ( null !== nodeScaleDict ){
                     delete nodeScaleDict;
                 }
@@ -656,7 +656,7 @@
                 }
                 var tour = getParameterByName("tour");
                 if ( tour ) {
-                    introJs().start();
+                    startIntroJS();
                 };
 
                 <!--Generate a viewer for parent parcel--!>
